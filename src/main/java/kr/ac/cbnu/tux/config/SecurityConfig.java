@@ -4,6 +4,7 @@ import kr.ac.cbnu.tux.security.JwtAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -37,9 +38,9 @@ public class SecurityConfig {
                             //.requestMatchers(HttpMethod.DELETE, "/api/board/**").authenticated()
 
                             /* User */
-                            //.requestMatchers(HttpMethod.GET, "/api/auth").authenticated()
-                            //.requestMatchers(HttpMethod.PUT, "/api/user/**").authenticated()
-                            //.requestMatchers(HttpMethod.DELETE, "/api/user/**").authenticated()
+                            .requestMatchers(HttpMethod.GET, "/api/auth").authenticated()
+                            .requestMatchers(HttpMethod.PUT, "/api/user/**").authenticated()
+                            .requestMatchers(HttpMethod.DELETE, "/api/user/**").authenticated()
 
                             .anyRequest().permitAll();
                 })

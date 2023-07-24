@@ -99,4 +99,16 @@ public class User implements UserDetails {
         return (!isLocked && !isBanned && !isDeleted);
     }
 
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private List<Community> posts = new ArrayList<>();
+
+    public void addPost(Community post) {
+        this.posts.add(post);
+
+        if (post.getUser() != this) {
+            post.setUser(this);
+        }
+    }
+
 }
