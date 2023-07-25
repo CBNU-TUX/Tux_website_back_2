@@ -34,7 +34,7 @@ public class User implements UserDetails {
     @Pattern(regexp = "[a-zA-Z\\d_]+", message = "Username Rule : only alphabet + number + _")
     private String username;    // 로그인에 사용되는 아이디
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     @NotEmpty
     private String nickname;    // 외부로 공개되는 닉네임 (작성자명)
 
@@ -108,6 +108,17 @@ public class User implements UserDetails {
 
         if (post.getUser() != this) {
             post.setUser(this);
+        }
+    }
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private List<CmComment> cmComments = new ArrayList<>();
+
+    public void addCmComment(CmComment comment) {
+        this.cmComments.add(comment);
+
+        if (comment.getUser() != this) {
+            comment.setUser(this);
         }
     }
 

@@ -9,6 +9,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Data
@@ -55,6 +57,17 @@ public class Community {
 
         if (user != null && !user.getPosts().contains(this)) {
             user.getPosts().add(this);
+        }
+    }
+
+    @OneToMany(mappedBy = "post", fetch = FetchType.EAGER)
+    private List<CmComment> comments = new ArrayList<>();
+
+    public void addComment(CmComment comment) {
+        this.comments.add(comment);
+
+        if (comment.getPost() != this) {
+            comment.setPost(this);
         }
     }
 }

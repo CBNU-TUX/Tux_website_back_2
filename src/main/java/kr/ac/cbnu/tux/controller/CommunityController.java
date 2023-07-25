@@ -1,5 +1,6 @@
 package kr.ac.cbnu.tux.controller;
 
+import kr.ac.cbnu.tux.domain.CmComment;
 import kr.ac.cbnu.tux.domain.Community;
 import kr.ac.cbnu.tux.domain.User;
 import kr.ac.cbnu.tux.dto.CommunityDTO;
@@ -18,8 +19,6 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.stream.Collectors;
 
 @Controller
@@ -87,6 +86,9 @@ public class CommunityController {
         }
     }
 
+
+    /* 게시판 리스트 조회 */
+
     @GetMapping("/api/community/list")
     @ResponseBody
     public Page<CommunityListDTO> list(@RequestParam(name = "query", defaultValue = "") String query, Pageable pageable) {
@@ -130,5 +132,27 @@ public class CommunityController {
     }
 
 
+    /* 댓글 */
+    @PostMapping("/api/community/{id}/comment")
+    @ResponseStatus(code = HttpStatus.ACCEPTED)
+    public void addComment(@PathVariable("id") Long id, @RequestBody CmComment comment) {
+        try {
+            User user = (User) userService.loadUserByUsername(Security.getCurrentUsername());
+            communityService.addComment(id, comment, user);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/api/community/{id}/comment/{commentId}")
+    @ResponseStatus(code = HttpStatus.ACCEPTED)
+    public void addComment(@PathVariable("id") Long id, @PathVariable("commentId") Long commentId) {
+        try {
+            User user = (User) userService.loadUserByUsername(Security.getCurrentUsername());
+            communityService.deleteComment(commentId, user);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
 
 }

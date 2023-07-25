@@ -32,10 +32,10 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> {
-                    /* Board */
-                    auth//.requestMatchers(HttpMethod.POST, "/api/board").authenticated()
-                            //.requestMatchers(HttpMethod.PUT, "/api/board/**").authenticated()
-                            //.requestMatchers(HttpMethod.DELETE, "/api/board/**").authenticated()
+                            /* Community */
+                    auth.requestMatchers(HttpMethod.POST, "/api/community").authenticated()
+                            .requestMatchers(HttpMethod.PUT, "/api/community/**").authenticated()
+                            .requestMatchers(HttpMethod.DELETE, "/api/community/**").authenticated()
 
                             /* User */
                             .requestMatchers(HttpMethod.GET, "/api/auth").authenticated()

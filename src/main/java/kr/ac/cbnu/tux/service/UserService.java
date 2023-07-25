@@ -34,7 +34,7 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public void create(User user) throws Exception {
+    public Long create(User user) throws Exception {
         if (!userRepository.existsByUsername(user.getUsername()) && !user.getUsername().equals("anonymousUser")
                 && Pattern.matches(PASSWORD_RULE, user.getPassword())) {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -44,6 +44,7 @@ public class UserService implements UserDetailsService {
             user.setDeleted(false);
             user.setCreatedDate(OffsetDateTime.now());
             userRepository.save(user);
+            return user.getId();
         } else {
             throw new Exception("username is not unique / password rule not matched");
         }
@@ -116,5 +117,9 @@ public class UserService implements UserDetailsService {
 
     public Boolean canUseAsNickname(String nickname) {
         return !userRepository.existsByNickname(nickname);
+    }
+
+    public Boolean canUseAsEmail(String email) {
+        return !userRepository.existsByEmail(email);
     }
 }
