@@ -100,6 +100,7 @@ public class User implements UserDetails {
     }
 
 
+    /* 커뮤니티 글 */
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<Community> posts = new ArrayList<>();
 
@@ -111,6 +112,7 @@ public class User implements UserDetails {
         }
     }
 
+    /* 커뮤니티 댓글 */
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<CmComment> cmComments = new ArrayList<>();
 
@@ -121,5 +123,30 @@ public class User implements UserDetails {
             comment.setUser(this);
         }
     }
+
+    /* 자료실 글 */
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private List<ReferenceRoom> datas = new ArrayList<>();
+
+    public void addData(ReferenceRoom data) {
+        this.datas.add(data);
+
+        if (data.getUser() != this) {
+            data.setUser(this);
+        }
+    }
+
+    /* 자료실 댓글 */
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private List<RfComment> rfComments = new ArrayList<>();
+
+    public void addRfComment(RfComment comment) {
+        this.rfComments.add(comment);
+
+        if (comment.getUser() != this) {
+            comment.setUser(this);
+        }
+    }
+
 
 }
