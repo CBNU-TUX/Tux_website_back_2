@@ -94,10 +94,10 @@ public class CommunityController {
     public Page<CommunityListDTO> list(@RequestParam(name = "query", defaultValue = "") String query, Pageable pageable) {
         try {
             Page<Community> found;
-            if (StringUtils.hasText(query)) {
-                found = communityService.searchList(query, pageable);
-            } else {
-                found = communityService.list(pageable);
+                if (StringUtils.hasText(query)) {
+                    found = communityService.searchList(query, pageable);
+                } else {
+                    found = communityService.list(pageable);
             }
 
             return new PageImpl<>(
@@ -146,7 +146,7 @@ public class CommunityController {
 
     @DeleteMapping("/api/community/{id}/comment/{commentId}")
     @ResponseStatus(code = HttpStatus.ACCEPTED)
-    public void addComment(@PathVariable("id") Long id, @PathVariable("commentId") Long commentId) {
+    public void deleteComment(@PathVariable("id") Long id, @PathVariable("commentId") Long commentId) {
         try {
             User user = (User) userService.loadUserByUsername(Security.getCurrentUsername());
             communityService.deleteComment(commentId, user);

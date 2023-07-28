@@ -1,5 +1,6 @@
 package kr.ac.cbnu.tux.config;
 
+import kr.ac.cbnu.tux.enums.UserRole;
 import kr.ac.cbnu.tux.security.JwtAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -41,6 +42,7 @@ public class SecurityConfig {
                             .requestMatchers(HttpMethod.GET, "/api/auth").authenticated()
                             .requestMatchers(HttpMethod.PUT, "/api/user/**").authenticated()
                             .requestMatchers(HttpMethod.DELETE, "/api/user/**").authenticated()
+                            .requestMatchers("/api/admin/**").hasAuthority(UserRole.ADMIN.name())
 
                             .anyRequest().permitAll();
                 })

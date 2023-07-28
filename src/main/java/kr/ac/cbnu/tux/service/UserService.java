@@ -16,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
@@ -84,6 +85,29 @@ public class UserService implements UserDetailsService {
         }
     }
 
+    public void hardDelete(Long id) throws Exception {
+        User user = userRepository.findById(id).orElseThrow();
+        userRepository.delete(user);
+    }
+
+    @Transactional
+    public void ban(Long id) throws Exception {
+        User user = userRepository.findById(id).orElseThrow();
+        user.setBanned(true);
+    }
+
+    @Transactional
+    public void changeUserRole(Long id, UserRole role) throws Exception {
+        User user = userRepository.findById(id).orElseThrow();
+        user.setRole(role);
+    }
+
+    @Transactional
+    public void setTemporalPassword(Long id, String password) throws Exception {
+        User user = userRepository.findById(id).orElseThrow();
+        user.setPassword(passwordEncoder.encode(password));
+    }
+
     public String tryLogin(LoginDTO loginDTO) throws UsernameNotFoundException {
         User user = userRepository.findUserByUsername(loginDTO.getUsername())
                 .orElseThrow(() -> new UsernameNotFoundException("User not present"));
@@ -121,5 +145,13 @@ public class UserService implements UserDetailsService {
 
     public Boolean canUseAsEmail(String email) {
         return !userRepository.existsByEmail(email);
+    }
+
+    public List<User> listAllWaitingUser() {
+        return userRepository.findUserByRole(UserRole.GUEST);
+    }
+
+    public List<User> listAllUserNotGuest() {
+        return userRepository.findUserByRoleNot(UserRole.GUEST);
     }
 }
