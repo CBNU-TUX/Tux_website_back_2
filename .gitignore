@@ -35,3 +35,7 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### File upload Path ###
+/src/main/resources/static/file/**
+/src/main/resources/static/image/**

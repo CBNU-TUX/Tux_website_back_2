@@ -40,7 +40,6 @@ public class CommunityController {
             User user = (User) userService.loadUserByUsername(Security.getCurrentUsername());
             communityService.create(post, user, convertType(type));
         } catch (Exception e) {
-            System.out.println(e.getMessage());
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
@@ -101,7 +100,7 @@ public class CommunityController {
             }
 
             return new PageImpl<>(
-                found.getContent().stream().map(post -> CommunityListDTO.build(post)).collect(Collectors.toList()),
+                found.getContent().stream().map(post -> CommunityListDTO.build(post)).toList(),
                 pageable,
                 found.getTotalElements()
             );
@@ -122,7 +121,7 @@ public class CommunityController {
                 found = communityService.listByCategory(pageable, convertType(type));
             }
             return new PageImpl<>(
-                    found.getContent().stream().map(post -> CommunityListDTO.build(post)).collect(Collectors.toList()),
+                    found.getContent().stream().map(post -> CommunityListDTO.build(post)).toList(),
                     pageable,
                     found.getTotalElements()
             );
