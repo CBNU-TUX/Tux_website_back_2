@@ -2,13 +2,10 @@ package kr.ac.cbnu.tux.controller;
 
 import jakarta.servlet.http.HttpServletResponse;
 import kr.ac.cbnu.tux.domain.Attachment;
-import kr.ac.cbnu.tux.domain.Community;
 import kr.ac.cbnu.tux.domain.ReferenceRoom;
 import kr.ac.cbnu.tux.domain.User;
-import kr.ac.cbnu.tux.dto.CommunityListDTO;
 import kr.ac.cbnu.tux.dto.ReferenceRoomDTO;
 import kr.ac.cbnu.tux.dto.ReferenceRoomListDTO;
-import kr.ac.cbnu.tux.enums.CommunityPostType;
 import kr.ac.cbnu.tux.enums.ReferenceRoomPostType;
 import kr.ac.cbnu.tux.service.AttachmentService;
 import kr.ac.cbnu.tux.service.ReferenceRoomService;

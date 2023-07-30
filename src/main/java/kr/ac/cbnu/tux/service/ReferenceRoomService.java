@@ -3,7 +3,6 @@ package kr.ac.cbnu.tux.service;
 
 import jakarta.transaction.Transactional;
 import kr.ac.cbnu.tux.domain.*;
-import kr.ac.cbnu.tux.enums.CommunityPostType;
 import kr.ac.cbnu.tux.enums.ReferenceRoomPostType;
 import kr.ac.cbnu.tux.repository.AttachmentRepository;
 import kr.ac.cbnu.tux.repository.ReferenceRoomRepository;
@@ -14,8 +13,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.Option;
-import java.sql.Ref;
 import java.time.OffsetDateTime;
 import java.util.Objects;
 import java.util.Optional;
