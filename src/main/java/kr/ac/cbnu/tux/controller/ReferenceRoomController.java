@@ -1,9 +1,7 @@
 package kr.ac.cbnu.tux.controller;
 
 import jakarta.servlet.http.HttpServletResponse;
-import kr.ac.cbnu.tux.domain.Attachment;
-import kr.ac.cbnu.tux.domain.ReferenceRoom;
-import kr.ac.cbnu.tux.domain.User;
+import kr.ac.cbnu.tux.domain.*;
 import kr.ac.cbnu.tux.dto.ReferenceRoomDTO;
 import kr.ac.cbnu.tux.dto.ReferenceRoomListDTO;
 import kr.ac.cbnu.tux.enums.ReferenceRoomPostType;
@@ -169,6 +167,30 @@ public class ReferenceRoomController {
                     pageable,
                     found.getTotalElements()
             );
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+    
+    
+    /* 댓글 */
+    @PostMapping("/api/referenceroom/{id}/comment")
+    @ResponseStatus(code = HttpStatus.ACCEPTED)
+    public void addComment(@PathVariable("id") Long id, @RequestBody RfComment comment) {
+        try {
+            User user = (User) userService.loadUserByUsername(Security.getCurrentUsername());
+            referenceRoomService.addComment(id, comment, user);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/api/referenceroom/{id}/comment/{commentId}")
+    @ResponseStatus(code = HttpStatus.ACCEPTED)
+    public void deleteComment(@PathVariable("id") Long id, @PathVariable("commentId") Long commentId) {
+        try {
+            User user = (User) userService.loadUserByUsername(Security.getCurrentUsername());
+            referenceRoomService.deleteComment(commentId, user);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
