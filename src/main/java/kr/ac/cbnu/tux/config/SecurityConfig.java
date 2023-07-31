@@ -38,6 +38,11 @@ public class SecurityConfig {
                             .requestMatchers(HttpMethod.PUT, "/api/community/**").authenticated()
                             .requestMatchers(HttpMethod.DELETE, "/api/community/**").authenticated()
 
+                            /* ReferenceRoom */
+                            .requestMatchers("/api/referenceroom/**").hasAnyAuthority(
+                                    UserRole.USER.name(), UserRole.MANAGER.name(), UserRole.ADMIN.name()
+                            )
+
                             /* User */
                             .requestMatchers(HttpMethod.GET, "/api/auth").authenticated()
                             .requestMatchers(HttpMethod.PUT, "/api/user/**").authenticated()

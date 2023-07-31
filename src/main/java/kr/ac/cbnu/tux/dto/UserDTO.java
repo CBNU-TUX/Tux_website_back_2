@@ -24,6 +24,7 @@ public class UserDTO {
     private String studentNumber;
     private String phoneNumber;
     private boolean isDeleted;
+    private boolean isBanned;
     private OffsetDateTime createdDate;
     private OffsetDateTime deletedDate;
 
@@ -38,6 +39,7 @@ public class UserDTO {
                 .studentNumber(user.getStudentNumber())
                 .phoneNumber(user.getPhoneNumber())
                 .isDeleted(user.isDeleted())
+                .isBanned(user.isBanned())
                 .createdDate(user.getCreatedDate())
                 .deletedDate(user.getDeletedDate())
                 .build();
