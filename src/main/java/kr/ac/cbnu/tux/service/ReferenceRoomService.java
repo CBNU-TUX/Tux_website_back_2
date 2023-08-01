@@ -113,7 +113,7 @@ public class ReferenceRoomService {
     }
 
     public Page<ReferenceRoom> searchList(String query, Pageable pageable) {
-        return referenceRoomRepository.findByIsDeletedFalseAndTitleContainingIgnoreCaseOrLectureContainingIgnoreCaseOrProfessorContainingIgnoreCaseOrderByCreatedDateDesc(
+        return referenceRoomRepository.findByIsDeletedFalseAndTitleContainingIgnoreCaseOrIsDeletedFalseAndLectureContainingIgnoreCaseOrIsDeletedFalseAndProfessorContainingIgnoreCaseOrderByCreatedDateDesc(
                 query, query, query, pageable
         );
     }
@@ -123,8 +123,8 @@ public class ReferenceRoomService {
     }
 
     public Page<ReferenceRoom> searchListByCategory(String query, Pageable pageable, ReferenceRoomPostType type) {
-        return referenceRoomRepository.findByIsDeletedFalseAndCategoryAndTitleContainingIgnoreCaseOrLectureContainingIgnoreCaseOrProfessorContainingIgnoreCaseOrderByCreatedDateDesc(
-                type, query, query, query, pageable
+        return referenceRoomRepository.findByIsDeletedFalseAndCategoryAndTitleContainingIgnoreCaseOrIsDeletedFalseAndCategoryAndLectureContainingIgnoreCaseOrIsDeletedFalseAndCategoryAndProfessorContainingIgnoreCaseOrderByCreatedDateDesc(
+                type, query, type, query, type, query, pageable
         );
     }
 

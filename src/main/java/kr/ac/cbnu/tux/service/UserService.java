@@ -57,7 +57,7 @@ public class UserService implements UserDetailsService {
         if (opUser.isPresent()) {
             User user = opUser.get();
             if (updated.getNickname() != null)
-                user.setUsername(updated.getUsername());
+                user.setNickname(updated.getNickname());
             if (updated.getPassword() != null)
                 user.setPassword(passwordEncoder.encode(updated.getPassword()));
             if (updated.getEmail() != null)

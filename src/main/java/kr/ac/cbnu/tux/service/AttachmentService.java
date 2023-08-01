@@ -26,7 +26,7 @@ public class AttachmentService {
         file.setFilename(multipartFile.getOriginalFilename());
         file.setPath("/api/referenceroom/" + data.getId() + "/file/" +
                 Objects.requireNonNull(multipartFile.getOriginalFilename()).replaceAll("[\\\\/:*?\"<>| ]", "_"));
-        file.setIsImage(false);
+        file.setIsImage(multipartFile.getContentType().startsWith("image"));
         file.setOrder(data.getAttachments().size() + 1);
         file.setData(data);
         return attachmentRepository.save(file);

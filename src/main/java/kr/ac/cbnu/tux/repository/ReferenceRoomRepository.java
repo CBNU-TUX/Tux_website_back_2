@@ -12,17 +12,18 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ReferenceRoomRepository extends JpaRepository<ReferenceRoom, Long> {
+    // 메서드 이름 길이가 긴데, 이게 맞는 건지는...
 
     Page<ReferenceRoom> findByIsDeletedFalseOrderByCreatedDateDesc(Pageable pageable);
 
-    Page<ReferenceRoom> findByIsDeletedFalseAndTitleContainingIgnoreCaseOrLectureContainingIgnoreCaseOrProfessorContainingIgnoreCaseOrderByCreatedDateDesc(
+    Page<ReferenceRoom> findByIsDeletedFalseAndTitleContainingIgnoreCaseOrIsDeletedFalseAndLectureContainingIgnoreCaseOrIsDeletedFalseAndProfessorContainingIgnoreCaseOrderByCreatedDateDesc(
             String title, String lecture, String professor, Pageable pageable
     );
 
     Page<ReferenceRoom> findByIsDeletedFalseAndCategoryOrderByCreatedDateDesc(ReferenceRoomPostType type, Pageable pageable);
 
-    Page<ReferenceRoom> findByIsDeletedFalseAndCategoryAndTitleContainingIgnoreCaseOrLectureContainingIgnoreCaseOrProfessorContainingIgnoreCaseOrderByCreatedDateDesc(
-            ReferenceRoomPostType type, String title, String lecture, String professor, Pageable pageable
+    Page<ReferenceRoom> findByIsDeletedFalseAndCategoryAndTitleContainingIgnoreCaseOrIsDeletedFalseAndCategoryAndLectureContainingIgnoreCaseOrIsDeletedFalseAndCategoryAndProfessorContainingIgnoreCaseOrderByCreatedDateDesc(
+            ReferenceRoomPostType type, String title, ReferenceRoomPostType type1, String lecture, ReferenceRoomPostType type2, String professor, Pageable pageable
     );
 
     Long countByIsDeletedFalse();
