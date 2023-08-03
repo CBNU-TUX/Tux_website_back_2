@@ -15,8 +15,10 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -207,21 +209,20 @@ public class CommunityController {
 
 
     /* 첨부파일 다운로드 */
-    @GetMapping(value = "/api/community/{id}/file/{filename}", produces = MediaType.ALL_VALUE)
-    @ResponseBody
-    public FileSystemResource getFile(
-            @PathVariable("id") String id, @PathVariable("filename") String filename, HttpServletResponse response
-    ) throws Exception {
+    @GetMapping(value = "/api/community/{id}/file/{filename}")
+    public ResponseEntity<FileSystemResource> getFile(
+            @PathVariable("id") String id, @PathVariable("filename") String filename) throws Exception {
         String path = System.getProperty("user.dir") +
                 String.format("/src/main/resources/static/file/community/%s/%s", id, URLDecoder.decode(filename, StandardCharsets.UTF_8));
 
         if (new File(path).exists()) {
-            response.setContentType(Files.probeContentType(Path.of(path)));
-            response.setHeader(
-                    "Content-Disposition",
-                    "attachment; filename=" + new String(filename.getBytes("UTF-8"), "ISO-8859-1"
-                    ));
-            return new FileSystemResource(path);
+            FileSystemResource resource = new FileSystemResource(path);
+
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType(Files.probeContentType(Path.of(path))))
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" +
+                            new String(filename.getBytes("UTF-8"), "ISO-8859-1") + "\"")
+                    .body(resource);
         } else {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Not found");
         }
