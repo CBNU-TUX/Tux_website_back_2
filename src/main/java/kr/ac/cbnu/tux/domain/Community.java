@@ -70,4 +70,16 @@ public class Community {
             comment.setPost(this);
         }
     }
+
+    @OneToMany(mappedBy = "post", fetch = FetchType.EAGER)
+    private List<Attachment> attachments = new ArrayList<>();
+
+    public void addAttachment(Attachment file) {
+        this.attachments.add(file);
+
+        if (file.getPost() != this) {
+            file.setPost(this);
+        }
+    }
+
 }

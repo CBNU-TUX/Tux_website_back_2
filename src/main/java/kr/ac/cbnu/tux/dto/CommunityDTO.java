@@ -25,9 +25,15 @@ public class CommunityDTO {
     private Long view;
     private Long authorId;
     private String author;
+    List<AttachmentDTO> files;
     private List<CmCommentDTO> comments;
 
     public static CommunityDTO build(Community post) {
+        List<AttachmentDTO> files = post.getAttachments().stream()
+                .sorted((c1, c2) -> c1.getOrder().compareTo(c2.getOrder()))
+                .map(c -> AttachmentDTO.build(c))
+                .toList();
+
         List<CmCommentDTO> comments = post.getComments().stream()
                 .filter(c -> !c.getIsDeleted())
                 .sorted((c1, c2) -> c1.getCreatedDate().compareTo(c2.getCreatedDate()))
@@ -44,6 +50,7 @@ public class CommunityDTO {
                 .view(post.getView())
                 .authorId(post.getUser().getId())
                 .author(post.getUser().getNickname())
+                .files(files)
                 .comments(comments)
                 .build();
     }

@@ -36,6 +36,17 @@ public class ReferenceRoomService {
 
     
     /* 파일 업로드 및 글쓰기 */
+
+    @Transactional
+    public void createWithoutFileUpload(ReferenceRoomPostType type, ReferenceRoom data, User user) {
+        data.setCategory(type);
+        data.setIsDeleted(false);
+        data.setCreatedDate(OffsetDateTime.now());
+        data.setView(0L);
+        data.setUser(user);
+        referenceRoomRepository.save(data);
+    }
+
     @Transactional
     public ReferenceRoom temporalCreate(ReferenceRoomPostType type, User user) {
         // 첨부파일 사전 업로드
@@ -72,16 +83,6 @@ public class ReferenceRoomService {
         else {
             throw new Exception("User not matched");
         }
-    }
-
-    @Transactional
-    public void createWithoutFileUpload(ReferenceRoomPostType type, ReferenceRoom data, User user) {
-        data.setCategory(type);
-        data.setIsDeleted(false);
-        data.setCreatedDate(OffsetDateTime.now());
-        data.setView(0L);
-        data.setUser(user);
-        referenceRoomRepository.save(data);
     }
 
     public Optional<ReferenceRoom> getData(Long id) {

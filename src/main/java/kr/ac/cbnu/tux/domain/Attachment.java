@@ -33,6 +33,20 @@ public class Attachment {
     private Integer order;     // 순서 : 갤러리 글의 사진 순서
 
 
+    // 커뮤니티와 맵핑시
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "post_id")
+    private Community post;
+
+    public void setPost(Community post) {
+        this.post = post;
+
+        if (post != null && !post.getAttachments().contains(this)) {
+            post.getAttachments().add(this);
+        }
+    }
+
+    // 자료실과 맵핑시
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "data_id")
     private ReferenceRoom data;

@@ -1,54 +1,107 @@
 package kr.ac.cbnu.tux.controller;
 
-import kr.ac.cbnu.tux.domain.CmComment;
-import kr.ac.cbnu.tux.domain.Community;
-import kr.ac.cbnu.tux.domain.User;
+import jakarta.servlet.http.HttpServletResponse;
+import kr.ac.cbnu.tux.domain.*;
 import kr.ac.cbnu.tux.dto.CommunityDTO;
 import kr.ac.cbnu.tux.dto.CommunityListDTO;
 import kr.ac.cbnu.tux.enums.CommunityPostType;
+import kr.ac.cbnu.tux.service.AttachmentService;
 import kr.ac.cbnu.tux.service.CommunityService;
 import kr.ac.cbnu.tux.service.UserService;
+import kr.ac.cbnu.tux.utility.FileHandler;
 import kr.ac.cbnu.tux.utility.Security;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.io.File;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 @Controller
 public class CommunityController {
 
     private final CommunityService communityService;
     private final UserService userService;
+    private final AttachmentService attachmentService;
 
     @Autowired
-    public CommunityController(CommunityService communityService, UserService userService) {
+    public CommunityController(CommunityService communityService, UserService userService, AttachmentService attachmentService) {
         this.communityService = communityService;
         this.userService = userService;
+        this.attachmentService = attachmentService;
     }
+
+    /* 파일 업로드 및 글쓰기 */
 
     @PostMapping("/api/community")
     @ResponseStatus(code = HttpStatus.CREATED)
-    public void create(@RequestParam("type") String type, @RequestBody Community post) {
+    public void createWithoutFileUpload(@RequestParam("type") String type, @RequestBody Community post) {
         try {
             User user = (User) userService.loadUserByUsername(Security.getCurrentUsername());
-            communityService.create(post, user, convertType(type));
+            communityService.createWithoutFileUpload(convertType(type), post, user);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
 
-    private CommunityPostType convertType(String type) {
-        if (type.equals("notice"))  return CommunityPostType.NOTICE;
-        if (type.equals("teamrecruitment")) return CommunityPostType.TEAMRECRUITMENT;
-        if (type.equals("contest")) return CommunityPostType.CONTEST;
-        if (type.equals("job")) return CommunityPostType.JOB;
-        else return CommunityPostType.FREE;
+    @PostMapping(path = "/api/community/file")
+    @ResponseBody
+    public Long fileUploadBeforeCreation(
+            @RequestParam("type") String type, @RequestParam("file") MultipartFile multipartFile) {
+        try {
+            User user = (User) userService.loadUserByUsername(Security.getCurrentUsername());
+            Community post = communityService.temporalCreate(convertType(type), user);
+            Attachment file = attachmentService.create(multipartFile, post);
+            communityService.addAttachment(file, post);
+            FileHandler.saveAttactment("community", post.getId().toString(), multipartFile);
+            return post.getId();
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
     }
+
+    @PostMapping(path = "/api/community/{id}/file")
+    @ResponseStatus(code = HttpStatus.ACCEPTED)
+    public void addFile(@PathVariable("id") Long id, @RequestParam("file") MultipartFile multipartFile) {
+        try {
+            User user = (User) userService.loadUserByUsername(Security.getCurrentUsername());
+            Community post = communityService.getData(id).orElseThrow();
+
+            if (user.getId().equals(post.getUser().getId())) {
+                Attachment file = attachmentService.create(multipartFile, post);
+                communityService.addAttachment(file, post);
+                FileHandler.saveAttactment("community", post.getId().toString(), multipartFile);
+            } else {
+                throw new Exception("User not matched");
+            }
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
+    @PostMapping("/api/community/{id}")
+    @ResponseStatus(code = HttpStatus.ACCEPTED)
+    public void updateAfterTemporalCreate(@PathVariable("id") Long id, @RequestBody Community post) {
+        try {
+            User user = (User) userService.loadUserByUsername(Security.getCurrentUsername());
+            communityService.updateAfterTemporalCreate(id, post, user);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
 
     @PutMapping("/api/community/{id}")
     @ResponseStatus(code = HttpStatus.ACCEPTED)
@@ -152,4 +205,34 @@ public class CommunityController {
         }
     }
 
+
+    /* 첨부파일 다운로드 */
+    @GetMapping(value = "/api/community/{id}/file/{filename}", produces = MediaType.ALL_VALUE)
+    @ResponseBody
+    public FileSystemResource getFile(
+            @PathVariable("id") String id, @PathVariable("filename") String filename, HttpServletResponse response
+    ) throws Exception {
+        String path = System.getProperty("user.dir") +
+                String.format("/src/main/resources/static/file/community/%s/%s", id, URLDecoder.decode(filename, StandardCharsets.UTF_8));
+
+        if (new File(path).exists()) {
+            response.setContentType(Files.probeContentType(Path.of(path)));
+            response.setHeader(
+                    "Content-Disposition",
+                    "attachment; filename=" + new String(filename.getBytes("UTF-8"), "ISO-8859-1"
+                    ));
+            return new FileSystemResource(path);
+        } else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Not found");
+        }
+    }
+
+
+    private CommunityPostType convertType(String type) {
+        if (type.equals("notice"))  return CommunityPostType.NOTICE;
+        if (type.equals("teamrecruitment")) return CommunityPostType.TEAMRECRUITMENT;
+        if (type.equals("contest")) return CommunityPostType.CONTEST;
+        if (type.equals("job")) return CommunityPostType.JOB;
+        else return CommunityPostType.FREE;
+    }
 }

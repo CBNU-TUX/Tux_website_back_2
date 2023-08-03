@@ -1,9 +1,7 @@
 package kr.ac.cbnu.tux.service;
 
 import jakarta.transaction.Transactional;
-import kr.ac.cbnu.tux.domain.CmComment;
-import kr.ac.cbnu.tux.domain.Community;
-import kr.ac.cbnu.tux.domain.User;
+import kr.ac.cbnu.tux.domain.*;
 import kr.ac.cbnu.tux.enums.CommunityPostType;
 import kr.ac.cbnu.tux.repository.CmCommentRepository;
 import kr.ac.cbnu.tux.repository.CommunityRepository;
@@ -32,8 +30,10 @@ public class CommunityService {
         this.sanitizer = sanitizer;
     }
 
+    /* 파일 업로드 및 글쓰기 */
+
     @Transactional
-    public void create(Community post, User user, CommunityPostType type) {
+    public void createWithoutFileUpload(CommunityPostType type, Community post, User user) {
         post.setCategory(type);
         post.setBody(sanitizer.sanitize(post.getBody()));
         post.setCreatedDate(OffsetDateTime.now());
@@ -42,6 +42,44 @@ public class CommunityService {
         post.setUser(user);
         communityRepository.save(post);
     }
+
+    @Transactional
+    public Community temporalCreate(CommunityPostType type, User user) {
+        // 첨부파일 사전 업로드
+        Community post = new Community();
+        post.setCategory(type);
+        post.setTitle("Auto creation by uploading file");
+        post.setBody(" ");
+        post.setIsDeleted(true);
+        post.setCreatedDate(OffsetDateTime.now());
+        post.setView(0L);
+        post.setUser(user);
+
+        return communityRepository.save(post);
+    }
+
+    @Transactional
+    public void addAttachment(Attachment file, Community post) {
+        post.addAttachment(file);
+    }
+
+    @Transactional
+    public void updateAfterTemporalCreate(Long id, Community updated, User user) throws Exception {
+        Community post = communityRepository.findById(id).orElseThrow();
+        if (user.getId().equals(post.getUser().getId())) {
+            post.setTitle(updated.getTitle());
+            post.setBody(updated.getBody());
+            post.setIsDeleted(false);
+        }
+        else {
+            throw new Exception("User not matched");
+        }
+    }
+
+    public Optional<Community> getData(Long id) {
+        return communityRepository.findById(id);
+    }
+
 
     @Transactional
     public void update(Long id, Community updated, User user) throws Exception {

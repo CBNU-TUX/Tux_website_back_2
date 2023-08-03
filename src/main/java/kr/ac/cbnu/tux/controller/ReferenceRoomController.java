@@ -45,6 +45,18 @@ public class ReferenceRoomController {
 
 
     /* 파일 업로드 및 글쓰기 */
+
+    @PostMapping("/api/referenceroom")
+    @ResponseStatus(code = HttpStatus.ACCEPTED)
+    public void createWithoutFileUpload(@RequestParam("type") String type, @RequestBody ReferenceRoom data) {
+        try {
+            User user = (User) userService.loadUserByUsername(Security.getCurrentUsername());
+            referenceRoomService.createWithoutFileUpload(convertType(type), data, user);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
     @PostMapping(path = "/api/referenceroom/file")
     @ResponseBody
     public Long fileUploadBeforeCreation(
@@ -86,18 +98,6 @@ public class ReferenceRoomController {
         try {
             User user = (User) userService.loadUserByUsername(Security.getCurrentUsername());
             referenceRoomService.updateAfterTemporalCreate(id, data, user);
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
-    }
-
-
-    @PostMapping("/api/referenceroom")
-    @ResponseStatus(code = HttpStatus.ACCEPTED)
-    public void createWithoutFileUpload(@RequestParam("type") String type, @RequestBody ReferenceRoom data) {
-        try {
-            User user = (User) userService.loadUserByUsername(Security.getCurrentUsername());
-            referenceRoomService.createWithoutFileUpload(convertType(type), data, user);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
