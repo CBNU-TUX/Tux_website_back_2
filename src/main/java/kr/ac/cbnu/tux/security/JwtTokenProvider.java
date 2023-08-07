@@ -15,7 +15,7 @@ public class JwtTokenProvider {
     private static final Key JWT_SECRET_KEY = Keys.hmacShaKeyFor(JWT_SECRET.getBytes());
 
     // Token Expiration Time
-    private static final int JWT_EXPIRATION_MS = 24 * 60 * 60 * 1000;
+    private static final int JWT_EXPIRATION_MS = 8 * 24 * 60 * 60 * 1000;
 
     private final static JwtParser jwtParser;
 
