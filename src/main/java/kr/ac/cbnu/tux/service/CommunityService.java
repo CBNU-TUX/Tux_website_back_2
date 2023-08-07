@@ -3,6 +3,7 @@ package kr.ac.cbnu.tux.service;
 import jakarta.transaction.Transactional;
 import kr.ac.cbnu.tux.domain.*;
 import kr.ac.cbnu.tux.enums.CommunityPostType;
+import kr.ac.cbnu.tux.enums.UserRole;
 import kr.ac.cbnu.tux.repository.CmCommentRepository;
 import kr.ac.cbnu.tux.repository.CommunityRepository;
 import kr.ac.cbnu.tux.utility.Sanitizer;
@@ -104,18 +105,15 @@ public class CommunityService {
 
     @Transactional
     public void delete(Long id, User user) throws Exception {
-        Optional<Community> opPost = communityRepository.findById(id);
-        if (opPost.isPresent()) {
-            Community post = opPost.get();
-            if (!Objects.equals(post.getUser().getId(), user.getId())) {
-                throw new Exception("User not matched");
-            }
+        Community post = communityRepository.findById(id).orElseThrow();
 
-            post.setIsDeleted(true);
-            post.setDeletedDate(OffsetDateTime.now());
-        } else {
-            throw new Exception("Not found");
+        if (user.getRole() != UserRole.ADMIN && user.getRole() != UserRole.MANAGER &&
+            !Objects.equals(post.getUser().getId(), user.getId())) {
+            throw new Exception("User not matched");
         }
+
+        post.setIsDeleted(true);
+        post.setDeletedDate(OffsetDateTime.now());
     }
 
     public Optional<Community> read(Long id) {

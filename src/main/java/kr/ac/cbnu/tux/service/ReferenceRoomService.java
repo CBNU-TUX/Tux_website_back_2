@@ -4,6 +4,7 @@ package kr.ac.cbnu.tux.service;
 import jakarta.transaction.Transactional;
 import kr.ac.cbnu.tux.domain.*;
 import kr.ac.cbnu.tux.enums.ReferenceRoomPostType;
+import kr.ac.cbnu.tux.enums.UserRole;
 import kr.ac.cbnu.tux.repository.AttachmentRepository;
 import kr.ac.cbnu.tux.repository.ReferenceRoomRepository;
 import kr.ac.cbnu.tux.repository.RfCommentRepository;
@@ -94,7 +95,8 @@ public class ReferenceRoomService {
     @Transactional
     public void delete(Long id, User user) throws Exception {
         ReferenceRoom data = referenceRoomRepository.findById(id).orElseThrow();
-        if (user.getId().equals(data.getUser().getId())) {
+        if (user.getRole() == UserRole.ADMIN || user.getRole() == UserRole.MANAGER ||
+                user.getId().equals(data.getUser().getId())) {
             data.setIsDeleted(true);
         } else {
             throw new Exception("user not matched");
