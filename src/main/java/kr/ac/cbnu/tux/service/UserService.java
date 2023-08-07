@@ -35,7 +35,7 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public Long create(User user) throws Exception {
+    public void create(User user) throws Exception {
         if (!userRepository.existsByUsername(user.getUsername()) && !user.getUsername().equals("anonymousUser")
                 && Pattern.matches(PASSWORD_RULE, user.getPassword())) {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -45,7 +45,6 @@ public class UserService implements UserDetailsService {
             user.setDeleted(false);
             user.setCreatedDate(OffsetDateTime.now());
             userRepository.save(user);
-            return user.getId();
         } else {
             throw new Exception("username is not unique / password rule not matched");
         }
@@ -85,25 +84,25 @@ public class UserService implements UserDetailsService {
         }
     }
 
-    public void hardDelete(Long id) throws Exception {
+    public void hardDelete(Long id) {
         User user = userRepository.findById(id).orElseThrow();
         userRepository.delete(user);
     }
 
     @Transactional
-    public void ban(Long id) throws Exception {
+    public void ban(Long id) {
         User user = userRepository.findById(id).orElseThrow();
         user.setBanned(true);
     }
 
     @Transactional
-    public void changeUserRole(Long id, UserRole role) throws Exception {
+    public void changeUserRole(Long id, UserRole role) {
         User user = userRepository.findById(id).orElseThrow();
         user.setRole(role);
     }
 
     @Transactional
-    public void setTemporalPassword(Long id, String password) throws Exception {
+    public void setTemporalPassword(Long id, String password) {
         User user = userRepository.findById(id).orElseThrow();
         user.setPassword(passwordEncoder.encode(password));
     }

@@ -19,7 +19,7 @@ import java.io.IOException;
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    UserRepository userRepository;
+    private final UserRepository userRepository;
 
     @Autowired
     public JwtAuthenticationFilter(UserRepository userRepository) {
@@ -49,9 +49,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             } else {
                 request.setAttribute("unauthorization", "401 No key or Key expiration");
             }
-        } catch (Exception e) {
-
-        }
+        } catch (Exception ignored) { }
         filterChain.doFilter(request, response);
     }
 

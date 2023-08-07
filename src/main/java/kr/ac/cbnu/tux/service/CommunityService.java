@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -69,7 +68,7 @@ public class CommunityService {
         Community post = communityRepository.findById(id).orElseThrow();
         if (user.getId().equals(post.getUser().getId())) {
             post.setTitle(updated.getTitle());
-            post.setBody(updated.getBody());
+            post.setBody(sanitizer.sanitize(updated.getBody()));
             post.setIsDeleted(false);
         }
         else {
@@ -84,13 +83,9 @@ public class CommunityService {
 
     @Transactional
     public void update(Long id, Community updated, User user) throws Exception {
-        Optional<Community> opPost = communityRepository.findById(id);
-        if (opPost.isPresent()) {
-            Community post = opPost.get();
-            if (!Objects.equals(post.getUser().getId(), user.getId())) {
-                throw new Exception("User not matched");
-            }
+        Community post = communityRepository.findById(id).orElseThrow();
 
+        if (post.getUser().getId().equals(user.getId())) {
             if (updated.getTitle() != null) {
                 post.setTitle(updated.getTitle());
             }
@@ -99,21 +94,20 @@ public class CommunityService {
             }
             post.setEditedDate(OffsetDateTime.now());
         } else {
-            throw new Exception("Not found");
+            throw new Exception("User not matched");
         }
     }
 
     @Transactional
     public void delete(Long id, User user) throws Exception {
         Community post = communityRepository.findById(id).orElseThrow();
-
-        if (user.getRole() != UserRole.ADMIN && user.getRole() != UserRole.MANAGER &&
-            !Objects.equals(post.getUser().getId(), user.getId())) {
-            throw new Exception("User not matched");
+        if (user.getRole() == UserRole.ADMIN || user.getRole() == UserRole.MANAGER ||
+                user.getId().equals(post.getUser().getId())) {
+            post.setIsDeleted(true);
+            post.setDeletedDate(OffsetDateTime.now());
+        } else {
+            throw new Exception("user not matched");
         }
-
-        post.setIsDeleted(true);
-        post.setDeletedDate(OffsetDateTime.now());
     }
 
     public Optional<Community> read(Long id) {
@@ -152,34 +146,23 @@ public class CommunityService {
     /* 댓글 관련 코드 */
 
     @Transactional
-    public void addComment(Long id, CmComment comment, User user) throws Exception {
-        Optional<Community> opPost = communityRepository.findById(id);
-        if (opPost.isPresent()) {
-            Community post = opPost.get();
-            comment.setCreatedDate(OffsetDateTime.now());
-            comment.setIsDeleted(false);
-            comment.setPost(post);
-            comment.setUser(user);
+    public void addComment(Long id, CmComment comment, User user) {
+        Community post = communityRepository.findById(id).orElseThrow();
 
-            cmCommentRepository.save(comment);
-        } else {
-            throw new Exception("Not found");
-        }
+        comment.setCreatedDate(OffsetDateTime.now());
+        comment.setIsDeleted(false);
+        comment.setPost(post);
+        comment.setUser(user);
+        cmCommentRepository.save(comment);
     }
 
     @Transactional
     public void deleteComment(Long commentId, User user)  throws Exception {
-        Optional<CmComment> opComment = cmCommentRepository.findById(commentId);
-        if (opComment.isPresent()) {
-            CmComment comment = opComment.get();
-            if (!Objects.equals(comment.getUser().getId(), user.getId())) {
-                throw new Exception("User not matched");
-            }
-
-            comment.setIsDeleted(true);
-            comment.setDeletedDate(OffsetDateTime.now());
-        } else {
-            throw new Exception("Not found");
+        CmComment comment = cmCommentRepository.findById(commentId).orElseThrow();
+        if (!comment.getUser().getId().equals(user.getId())) {
+            throw new Exception("User not matched");
         }
+        comment.setIsDeleted(true);
+        comment.setDeletedDate(OffsetDateTime.now());
     }
 }

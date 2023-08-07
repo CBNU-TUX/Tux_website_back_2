@@ -1,6 +1,5 @@
 package kr.ac.cbnu.tux.controller;
 
-import jakarta.servlet.http.HttpServletResponse;
 import kr.ac.cbnu.tux.domain.*;
 import kr.ac.cbnu.tux.dto.CommunityDTO;
 import kr.ac.cbnu.tux.dto.CommunityListDTO;
