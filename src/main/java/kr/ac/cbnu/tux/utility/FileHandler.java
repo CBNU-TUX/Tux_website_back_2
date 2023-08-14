@@ -1,8 +1,12 @@
 package kr.ac.cbnu.tux.utility;
 
+import kr.ac.cbnu.tux.domain.Attachment;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Objects;
 
 public class FileHandler {
@@ -19,7 +23,13 @@ public class FileHandler {
 
         File destFile = new File(filePath);
         file.transferTo(destFile);
+    }
 
+    public static void deleteAttactment(String prefix, String id, Attachment file) throws IOException {
+        String directoryPath = System.getProperty("user.dir") +
+                "/src/main/resources/static/file/" + prefix + "/" + id;
+        String filePath = directoryPath + "/" + file.getFilename().replaceAll("[\\\\/:*?\"<>| ]", "_");
 
+        Files.deleteIfExists(Paths.get(filePath));
     }
 }

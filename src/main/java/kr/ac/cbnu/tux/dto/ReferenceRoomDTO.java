@@ -27,6 +27,7 @@ public class ReferenceRoomDTO {
     List<AttachmentDTO> files;
     List<RfCommentDTO> comments;
 
+    private Boolean isAnonymized;
     private String lecture;
     private String semester;
     private String professor;
@@ -53,6 +54,7 @@ public class ReferenceRoomDTO {
                 .view(data.getView())
                 .authorId(data.getUser().getId())
                 .author((data.getIsAnonymized()) ? "익명" : data.getUser().getNickname())
+                .isAnonymized(data.getIsAnonymized())
                 .lecture(data.getLecture())
                 .semester(data.getSemester())
                 .professor(data.getProfessor())

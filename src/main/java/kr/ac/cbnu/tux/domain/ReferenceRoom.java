@@ -91,4 +91,12 @@ public class ReferenceRoom {
         }
     }
 
+    public void removeAttachment(Attachment file) {
+        this.attachments.remove(file);
+
+        if (file.getData() != null) {
+            file.setData(null);
+        }
+    }
+
 }

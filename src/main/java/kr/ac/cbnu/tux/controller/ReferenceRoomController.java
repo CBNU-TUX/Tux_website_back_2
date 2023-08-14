@@ -104,6 +104,18 @@ public class ReferenceRoomController {
         }
     }
 
+
+    /* 글 수정 */
+    @PutMapping("/api/referenceroom/{id}")
+    @ResponseStatus(code = HttpStatus.ACCEPTED)
+    public void update(@PathVariable("id") Long id, @RequestParam("type") String type, @RequestBody ReferenceRoom updated) {
+        try {
+            User user = (User) userService.loadUserByUsername(Security.getCurrentUsername());
+            referenceRoomService.update(id, convertType(type), updated, user);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
     
     /* 글 삭제 */
     @DeleteMapping("/api/referenceroom/{id}")
@@ -216,6 +228,25 @@ public class ReferenceRoomController {
         } else {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Not found");
         }
+    }
+
+    /* 첨부파일 삭제 */
+    @DeleteMapping(value = "/api/referenceroom/{id}/file/{filename}")
+    @ResponseStatus(code = HttpStatus.ACCEPTED)
+    public void deleteFile(@PathVariable("id") Long id, @PathVariable("filename") String filename) throws Exception {
+        //try {
+            User user = (User) userService.loadUserByUsername(Security.getCurrentUsername());
+            ReferenceRoom data = referenceRoomService.getData(id).orElseThrow();
+
+            if (user.getId().equals(data.getUser().getId())) {
+                Attachment file = attachmentService.getFile(URLDecoder.decode(filename, StandardCharsets.UTF_8), data).orElseThrow();
+                attachmentService.delete(file, data);
+            } else {
+                throw new Exception("User not matched");
+            }
+        //} catch (Exception e) {
+        //    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        //}
     }
     
     private ReferenceRoomPostType convertType(String type) {

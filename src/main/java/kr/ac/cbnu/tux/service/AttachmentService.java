@@ -5,11 +5,13 @@ import kr.ac.cbnu.tux.domain.Attachment;
 import kr.ac.cbnu.tux.domain.Community;
 import kr.ac.cbnu.tux.domain.ReferenceRoom;
 import kr.ac.cbnu.tux.repository.AttachmentRepository;
+import kr.ac.cbnu.tux.utility.FileHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 public class AttachmentService {
@@ -43,6 +45,17 @@ public class AttachmentService {
         file.setOrder(post.getAttachments().size() + 1);
         file.setPost(post);
         return attachmentRepository.save(file);
+    }
+
+    public Optional<Attachment> getFile(String filename, ReferenceRoom data) {
+        return attachmentRepository.findByFilenameAndData(filename, data);
+    }
+
+    @Transactional
+    public void delete(Attachment file, ReferenceRoom data) throws Exception {
+        FileHandler.deleteAttactment("referenceroom", data.getId().toString(), file);
+        data.removeAttachment(file);
+        attachmentRepository.delete(file);
     }
 
 

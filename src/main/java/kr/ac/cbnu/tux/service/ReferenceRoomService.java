@@ -85,6 +85,24 @@ public class ReferenceRoomService {
         return referenceRoomRepository.findById(id);
     }
 
+    /* 글 수정 */
+    @Transactional
+    public void update(Long id, ReferenceRoomPostType updatedCategory, ReferenceRoom updated, User user) throws Exception {
+        ReferenceRoom data = referenceRoomRepository.findById(id).orElseThrow();
+
+        if (data.getUser().getId().equals(user.getId())) {
+            data.setCategory(updatedCategory);
+            data.setTitle(updated.getTitle());
+            data.setBody(sanitizer.sanitize(updated.getBody()));
+            data.setIsAnonymized(updated.getIsAnonymized());
+            data.setLecture(updated.getLecture());
+            data.setSemester(updated.getSemester());
+            data.setProfessor(updated.getProfessor());
+            data.setEditedDate(OffsetDateTime.now());
+        } else {
+            throw new Exception("user not matched");
+        }
+    }
 
     /* 글 삭제 */
     @Transactional
