@@ -35,6 +35,9 @@ public class GalleryListDTO {
                 .sorted((c1, c2) -> c1.getOrder().compareTo(c2.getOrder()))
                 .toList();
 
+        System.out.println(imageFiles.size());
+        System.out.println(imageFiles.get(0).getFilename());
+
         return GalleryListDTO.builder()
                 .id(data.getId())
                 .category(data.getCategory().name())

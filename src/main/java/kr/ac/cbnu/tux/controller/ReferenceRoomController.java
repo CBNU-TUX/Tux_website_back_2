@@ -234,7 +234,7 @@ public class ReferenceRoomController {
     @DeleteMapping(value = "/api/referenceroom/{id}/file/{filename}")
     @ResponseStatus(code = HttpStatus.ACCEPTED)
     public void deleteFile(@PathVariable("id") Long id, @PathVariable("filename") String filename) throws Exception {
-        //try {
+        try {
             User user = (User) userService.loadUserByUsername(Security.getCurrentUsername());
             ReferenceRoom data = referenceRoomService.getData(id).orElseThrow();
 
@@ -244,9 +244,9 @@ public class ReferenceRoomController {
             } else {
                 throw new Exception("User not matched");
             }
-        //} catch (Exception e) {
-        //    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-        //}
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
     }
     
     private ReferenceRoomPostType convertType(String type) {

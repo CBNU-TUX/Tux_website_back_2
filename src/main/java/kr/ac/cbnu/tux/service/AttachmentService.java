@@ -47,8 +47,19 @@ public class AttachmentService {
         return attachmentRepository.save(file);
     }
 
+    public Optional<Attachment> getFile(String filename, Community post) {
+        return attachmentRepository.findByFilenameAndPost(filename, post);
+    }
+
     public Optional<Attachment> getFile(String filename, ReferenceRoom data) {
         return attachmentRepository.findByFilenameAndData(filename, data);
+    }
+
+    @Transactional
+    public void delete(Attachment file, Community post) throws Exception {
+        FileHandler.deleteAttactment("community", post.getId().toString(), file);
+        post.removeAttachment(file);
+        attachmentRepository.delete(file);
     }
 
     @Transactional

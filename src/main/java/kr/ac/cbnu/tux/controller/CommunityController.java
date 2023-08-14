@@ -106,10 +106,10 @@ public class CommunityController {
 
     @PutMapping("/api/community/{id}")
     @ResponseStatus(code = HttpStatus.ACCEPTED)
-    public void update(@PathVariable("id") Long id, @RequestBody Community post) {
+    public void update(@PathVariable("id") Long id,  @RequestParam("type") String type, @RequestBody Community updated) {
         try {
             User user = (User) userService.loadUserByUsername(Security.getCurrentUsername());
-            communityService.update(id, post, user);
+            communityService.update(id, convertType(type), updated, user);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
@@ -227,6 +227,24 @@ public class CommunityController {
         }
     }
 
+    /* 첨부파일 삭제 */
+    @DeleteMapping(value = "/api/community/{id}/file/{filename}")
+    @ResponseStatus(code = HttpStatus.ACCEPTED)
+    public void deleteFile(@PathVariable("id") Long id, @PathVariable("filename") String filename) throws Exception {
+        try {
+            User user = (User) userService.loadUserByUsername(Security.getCurrentUsername());
+            Community post = communityService.getData(id).orElseThrow();
+
+            if (user.getId().equals(post.getUser().getId())) {
+                Attachment file = attachmentService.getFile(URLDecoder.decode(filename, StandardCharsets.UTF_8), post).orElseThrow();
+                attachmentService.delete(file, post);
+            } else {
+                throw new Exception("User not matched");
+            }
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
 
     private CommunityPostType convertType(String type) {
         if (type.equals("notice"))  return CommunityPostType.NOTICE;

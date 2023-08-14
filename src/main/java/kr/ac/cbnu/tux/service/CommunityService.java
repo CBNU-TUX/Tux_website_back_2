@@ -82,16 +82,13 @@ public class CommunityService {
 
 
     @Transactional
-    public void update(Long id, Community updated, User user) throws Exception {
+    public void update(Long id, CommunityPostType updatedCategory, Community updated, User user) throws Exception {
         Community post = communityRepository.findById(id).orElseThrow();
 
         if (post.getUser().getId().equals(user.getId())) {
-            if (updated.getTitle() != null) {
-                post.setTitle(updated.getTitle());
-            }
-            if (updated.getBody() != null) {
-                post.setBody(sanitizer.sanitize(updated.getBody()));
-            }
+            post.setCategory(updatedCategory);
+            post.setTitle(updated.getTitle());
+            post.setBody(sanitizer.sanitize(updated.getBody()));
             post.setEditedDate(OffsetDateTime.now());
         } else {
             throw new Exception("User not matched");
