@@ -4,7 +4,9 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import io.micrometer.common.util.StringUtils;
+import kr.ac.cbnu.tux.domain.User;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.security.Key;
 import java.util.Date;
@@ -30,7 +32,7 @@ public class JwtTokenProvider {
         Date expiryDate = new Date(now.getTime() + JWT_EXPIRATION_MS);
 
         return Jwts.builder()
-                .setSubject((String) authentication.getPrincipal())
+                .setSubject(((UserDetails)authentication.getPrincipal()).getUsername())
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
                 .signWith(JWT_SECRET_KEY, SignatureAlgorithm.HS512)

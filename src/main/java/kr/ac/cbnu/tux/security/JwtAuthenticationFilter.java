@@ -39,7 +39,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     User user = userRepository.findUserByUsername(username)
                             .orElseThrow(() -> new UsernameNotFoundException("User not present"));
 
-                    UserAuthentication authentication = new UserAuthentication(username, null, user.getAuthorities());
+                    UserAuthentication authentication = new UserAuthentication(user, null, user.getAuthorities());
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
                     SecurityContextHolder.getContext().setAuthentication(authentication);

@@ -1,8 +1,10 @@
 package kr.ac.cbnu.tux.utility;
 
+import kr.ac.cbnu.tux.domain.User;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -15,7 +17,7 @@ public class Security {
     public static String getCurrentUsername()
     {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return authentication.getPrincipal().toString();
+        return ((UserDetails)authentication.getPrincipal()).getUsername();
     }
 
     /**

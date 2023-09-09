@@ -116,7 +116,7 @@ public class UserService implements UserDetailsService {
 
         if (passwordEncoder.matches(loginDTO.getPassword(), user.getPassword())) {
             Authentication authentication = new UserAuthentication(
-                    loginDTO.getUsername(), loginDTO.getPassword(), user.getAuthorities()
+                    user, loginDTO.getPassword(), user.getAuthorities()
             );
             return JwtTokenProvider.generateToken(authentication);
         } else {
