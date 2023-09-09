@@ -2,6 +2,7 @@ package kr.ac.cbnu.tux.domain;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import kr.ac.cbnu.tux.enums.ReferenceRoomPostType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -59,6 +60,7 @@ public class ReferenceRoom {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
+    @NotNull
     private User user;
 
     public void setUser(User user) {
