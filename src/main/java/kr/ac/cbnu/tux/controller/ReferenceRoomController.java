@@ -8,7 +8,6 @@ import kr.ac.cbnu.tux.service.AttachmentService;
 import kr.ac.cbnu.tux.service.ReferenceRoomService;
 import kr.ac.cbnu.tux.service.UserService;
 import kr.ac.cbnu.tux.utility.FileHandler;
-import kr.ac.cbnu.tux.utility.Security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.data.domain.Page;
@@ -18,6 +17,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -49,9 +49,9 @@ public class ReferenceRoomController {
 
     @PostMapping("/api/referenceroom")
     @ResponseStatus(code = HttpStatus.ACCEPTED)
-    public void createWithoutFileUpload(@RequestParam("type") String type, @RequestBody ReferenceRoom data) {
+    public void createWithoutFileUpload(@RequestParam("type") String type, @RequestBody ReferenceRoom data,
+                                        @AuthenticationPrincipal User user) {
         try {
-            User user = (User) userService.loadUserByUsername(Security.getCurrentUsername());
             referenceRoomService.createWithoutFileUpload(convertType(type), data, user);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
@@ -61,9 +61,9 @@ public class ReferenceRoomController {
     @PostMapping(path = "/api/referenceroom/file")
     @ResponseBody
     public Long fileUploadBeforeCreation(
-            @RequestParam("type") String type, @RequestParam("file") MultipartFile multipartFile) {
+            @RequestParam("type") String type, @RequestParam("file") MultipartFile multipartFile,
+            @AuthenticationPrincipal User user) {
         try {
-            User user = (User) userService.loadUserByUsername(Security.getCurrentUsername());
             ReferenceRoom data = referenceRoomService.temporalCreate(convertType(type), user);
             Attachment file = attachmentService.create(multipartFile, data);
             referenceRoomService.addAttachment(file, data);
@@ -76,9 +76,9 @@ public class ReferenceRoomController {
 
     @PostMapping(path = "/api/referenceroom/{id}/file")
     @ResponseStatus(code = HttpStatus.ACCEPTED)
-    public void addFile(@PathVariable("id") Long id, @RequestParam("file") MultipartFile multipartFile) {
+    public void addFile(@PathVariable("id") Long id, @RequestParam("file") MultipartFile multipartFile,
+                        @AuthenticationPrincipal User user) {
         try {
-            User user = (User) userService.loadUserByUsername(Security.getCurrentUsername());
             ReferenceRoom data = referenceRoomService.getData(id).orElseThrow();
 
             if (user.getId().equals(data.getUser().getId())) {
@@ -95,9 +95,9 @@ public class ReferenceRoomController {
 
     @PostMapping("/api/referenceroom/{id}")
     @ResponseStatus(code = HttpStatus.ACCEPTED)
-    public void updateAfterTemporalCreate(@PathVariable("id") Long id, @RequestBody ReferenceRoom data) {
+    public void updateAfterTemporalCreate(@PathVariable("id") Long id, @RequestBody ReferenceRoom data,
+                                          @AuthenticationPrincipal User user) {
         try {
-            User user = (User) userService.loadUserByUsername(Security.getCurrentUsername());
             referenceRoomService.updateAfterTemporalCreate(id, data, user);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
@@ -108,9 +108,9 @@ public class ReferenceRoomController {
     /* 글 수정 */
     @PutMapping("/api/referenceroom/{id}")
     @ResponseStatus(code = HttpStatus.ACCEPTED)
-    public void update(@PathVariable("id") Long id, @RequestParam("type") String type, @RequestBody ReferenceRoom updated) {
+    public void update(@PathVariable("id") Long id, @RequestParam("type") String type, @RequestBody ReferenceRoom updated,
+                       @AuthenticationPrincipal User user) {
         try {
-            User user = (User) userService.loadUserByUsername(Security.getCurrentUsername());
             referenceRoomService.update(id, convertType(type), updated, user);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
@@ -120,9 +120,8 @@ public class ReferenceRoomController {
     /* 글 삭제 */
     @DeleteMapping("/api/referenceroom/{id}")
     @ResponseStatus(code = HttpStatus.ACCEPTED)
-    public void delete(@PathVariable("id") Long id) {
+    public void delete(@PathVariable("id") Long id, @AuthenticationPrincipal User user) {
         try {
-            User user = (User) userService.loadUserByUsername(Security.getCurrentUsername());
             referenceRoomService.delete(id, user);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
@@ -189,9 +188,9 @@ public class ReferenceRoomController {
     /* 댓글 */
     @PostMapping("/api/referenceroom/{id}/comment")
     @ResponseStatus(code = HttpStatus.ACCEPTED)
-    public void addComment(@PathVariable("id") Long id, @RequestBody RfComment comment) {
+    public void addComment(@PathVariable("id") Long id, @RequestBody RfComment comment,
+                           @AuthenticationPrincipal User user) {
         try {
-            User user = (User) userService.loadUserByUsername(Security.getCurrentUsername());
             referenceRoomService.addComment(id, comment, user);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
@@ -200,9 +199,9 @@ public class ReferenceRoomController {
 
     @DeleteMapping("/api/referenceroom/{id}/comment/{commentId}")
     @ResponseStatus(code = HttpStatus.ACCEPTED)
-    public void deleteComment(@PathVariable("id") Long id, @PathVariable("commentId") Long commentId) {
+    public void deleteComment(@PathVariable("id") Long id, @PathVariable("commentId") Long commentId,
+                              @AuthenticationPrincipal User user) {
         try {
-            User user = (User) userService.loadUserByUsername(Security.getCurrentUsername());
             referenceRoomService.deleteComment(commentId, user);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
@@ -233,9 +232,9 @@ public class ReferenceRoomController {
     /* 첨부파일 삭제 */
     @DeleteMapping(value = "/api/referenceroom/{id}/file/{filename}")
     @ResponseStatus(code = HttpStatus.ACCEPTED)
-    public void deleteFile(@PathVariable("id") Long id, @PathVariable("filename") String filename) throws Exception {
+    public void deleteFile(@PathVariable("id") Long id, @PathVariable("filename") String filename,
+                           @AuthenticationPrincipal User user) {
         try {
-            User user = (User) userService.loadUserByUsername(Security.getCurrentUsername());
             ReferenceRoom data = referenceRoomService.getData(id).orElseThrow();
 
             if (user.getId().equals(data.getUser().getId())) {

@@ -8,9 +8,9 @@ import kr.ac.cbnu.tux.dto.LoginDTO;
 import kr.ac.cbnu.tux.dto.UserDTO;
 import kr.ac.cbnu.tux.enums.UserRole;
 import kr.ac.cbnu.tux.service.UserService;
-import kr.ac.cbnu.tux.utility.Security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -52,9 +52,8 @@ public class UserController {
 
     @GetMapping("/api/auth")
     @ResponseBody
-    public UserDTO getCurrent() {
+    public UserDTO getCurrent(@AuthenticationPrincipal User user) {
         try {
-            User user = (User) userService.loadUserByUsername(Security.getCurrentUsername());
             return UserDTO.build(user);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
@@ -73,9 +72,8 @@ public class UserController {
 
     @PutMapping("/api/user/{id}")
     @ResponseStatus(code = HttpStatus.ACCEPTED)
-    public void update(@PathVariable("id") Long id, @RequestBody User user) {
+    public void update(@PathVariable("id") Long id, @RequestBody User user, @AuthenticationPrincipal User currentUser) {
         try {
-            User currentUser = (User) userService.loadUserByUsername(Security.getCurrentUsername());
             if (!Objects.deepEquals(currentUser.getId(), id)) {
                 throw new Exception("User not matched");
             }
@@ -88,9 +86,8 @@ public class UserController {
 
     @DeleteMapping("/api/user/{id}")
     @ResponseStatus(code = HttpStatus.ACCEPTED)
-    public void delete(@PathVariable("id") Long id) {
+    public void delete(@PathVariable("id") Long id, @AuthenticationPrincipal User currentUser) {
         try {
-            User currentUser = (User) userService.loadUserByUsername(Security.getCurrentUsername());
             if (!Objects.deepEquals(currentUser.getId(), id)) {
                 throw new Exception("User not matched");
             }
@@ -103,10 +100,10 @@ public class UserController {
 
     @GetMapping("/api/user/{id}")
     @ResponseBody
-    public UserDTO read(@PathVariable("id") Long id) {
+    public UserDTO read(@PathVariable("id") Long id, @AuthenticationPrincipal User currentUser) {
         try {
-            String currentUsername = Security.getCurrentUsername();
-            String currentRole = Security.getCurrentUserRole();
+            String currentUsername = currentUser.getUsername();
+            String currentRole = currentUser.getRole().name();
             if (currentUsername.equals("anonymousUser") ||
                     !currentUsername.equals(userService.read(id).orElseThrow().getUsername()) ||
                     !currentRole.equals(UserRole.MANAGER.name()) && !currentRole.equals(UserRole.ADMIN.name())) {

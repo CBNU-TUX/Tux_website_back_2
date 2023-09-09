@@ -1,6 +1,7 @@
 package kr.ac.cbnu.tux.service;
 
 import jakarta.transaction.Transactional;
+import jakarta.validation.constraints.NotNull;
 import kr.ac.cbnu.tux.domain.*;
 import kr.ac.cbnu.tux.enums.CommunityPostType;
 import kr.ac.cbnu.tux.enums.UserRole;

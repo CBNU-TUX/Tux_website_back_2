@@ -1,14 +1,14 @@
 package kr.ac.cbnu.tux.controller;
 
+import jakarta.transaction.Transactional;
+import jakarta.validation.constraints.NotNull;
 import kr.ac.cbnu.tux.domain.*;
 import kr.ac.cbnu.tux.dto.CommunityDTO;
 import kr.ac.cbnu.tux.dto.CommunityListDTO;
 import kr.ac.cbnu.tux.enums.CommunityPostType;
 import kr.ac.cbnu.tux.service.AttachmentService;
 import kr.ac.cbnu.tux.service.CommunityService;
-import kr.ac.cbnu.tux.service.UserService;
 import kr.ac.cbnu.tux.utility.FileHandler;
-import kr.ac.cbnu.tux.utility.Security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.data.domain.Page;
@@ -18,6 +18,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -29,18 +30,17 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Objects;
 
 @Controller
 public class CommunityController {
 
     private final CommunityService communityService;
-    private final UserService userService;
     private final AttachmentService attachmentService;
 
     @Autowired
-    public CommunityController(CommunityService communityService, UserService userService, AttachmentService attachmentService) {
+    public CommunityController(CommunityService communityService, AttachmentService attachmentService) {
         this.communityService = communityService;
-        this.userService = userService;
         this.attachmentService = attachmentService;
     }
 
@@ -48,9 +48,9 @@ public class CommunityController {
 
     @PostMapping("/api/community")
     @ResponseStatus(code = HttpStatus.CREATED)
-    public void createWithoutFileUpload(@RequestParam("type") String type, @RequestBody Community post) {
+    public void createWithoutFileUpload(@RequestParam("type") String type, @RequestBody Community post,
+                                        @AuthenticationPrincipal User user) {
         try {
-            User user = (User) userService.loadUserByUsername(Security.getCurrentUsername());
             communityService.createWithoutFileUpload(convertType(type), post, user);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
@@ -60,9 +60,9 @@ public class CommunityController {
     @PostMapping(path = "/api/community/file")
     @ResponseBody
     public Long fileUploadBeforeCreation(
-            @RequestParam("type") String type, @RequestParam("file") MultipartFile multipartFile) {
+            @RequestParam("type") String type, @RequestParam("file") MultipartFile multipartFile,
+            @AuthenticationPrincipal User user) {
         try {
-            User user = (User) userService.loadUserByUsername(Security.getCurrentUsername());
             Community post = communityService.temporalCreate(convertType(type), user);
             Attachment file = attachmentService.create(multipartFile, post);
             communityService.addAttachment(file, post);
@@ -75,9 +75,10 @@ public class CommunityController {
 
     @PostMapping(path = "/api/community/{id}/file")
     @ResponseStatus(code = HttpStatus.ACCEPTED)
-    public void addFile(@PathVariable("id") Long id, @RequestParam("file") MultipartFile multipartFile) {
+    public void addFile(
+            @PathVariable("id") Long id, @RequestParam("file") MultipartFile multipartFile,
+            @AuthenticationPrincipal User user) {
         try {
-            User user = (User) userService.loadUserByUsername(Security.getCurrentUsername());
             Community post = communityService.getData(id).orElseThrow();
 
             if (user.getId().equals(post.getUser().getId())) {
@@ -94,9 +95,9 @@ public class CommunityController {
 
     @PostMapping("/api/community/{id}")
     @ResponseStatus(code = HttpStatus.ACCEPTED)
-    public void updateAfterTemporalCreate(@PathVariable("id") Long id, @RequestBody Community post) {
+    public void updateAfterTemporalCreate(@PathVariable("id") Long id, @RequestBody Community post,
+                                          @AuthenticationPrincipal User user) {
         try {
-            User user = (User) userService.loadUserByUsername(Security.getCurrentUsername());
             communityService.updateAfterTemporalCreate(id, post, user);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
@@ -106,9 +107,9 @@ public class CommunityController {
 
     @PutMapping("/api/community/{id}")
     @ResponseStatus(code = HttpStatus.ACCEPTED)
-    public void update(@PathVariable("id") Long id,  @RequestParam("type") String type, @RequestBody Community updated) {
+    public void update(@PathVariable("id") Long id,  @RequestParam("type") String type, @RequestBody Community updated,
+                       @AuthenticationPrincipal User user) {
         try {
-            User user = (User) userService.loadUserByUsername(Security.getCurrentUsername());
             communityService.update(id, convertType(type), updated, user);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
@@ -117,9 +118,8 @@ public class CommunityController {
 
     @DeleteMapping("/api/community/{id}")
     @ResponseStatus(code = HttpStatus.ACCEPTED)
-    public void delete(@PathVariable("id") Long id) {
+    public void delete(@PathVariable("id") Long id, @AuthenticationPrincipal User user) {
         try {
-            User user = (User) userService.loadUserByUsername(Security.getCurrentUsername());
             communityService.delete(id, user);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
@@ -186,9 +186,9 @@ public class CommunityController {
     /* 댓글 */
     @PostMapping("/api/community/{id}/comment")
     @ResponseStatus(code = HttpStatus.ACCEPTED)
-    public void addComment(@PathVariable("id") Long id, @RequestBody CmComment comment) {
+    public void addComment(@PathVariable("id") Long id, @RequestBody CmComment comment,
+                           @AuthenticationPrincipal User user) {
         try {
-            User user = (User) userService.loadUserByUsername(Security.getCurrentUsername());
             communityService.addComment(id, comment, user);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
@@ -197,9 +197,9 @@ public class CommunityController {
 
     @DeleteMapping("/api/community/{id}/comment/{commentId}")
     @ResponseStatus(code = HttpStatus.ACCEPTED)
-    public void deleteComment(@PathVariable("id") Long id, @PathVariable("commentId") Long commentId) {
+    public void deleteComment(@PathVariable("id") Long id, @PathVariable("commentId") Long commentId,
+                              @AuthenticationPrincipal User user) {
         try {
-            User user = (User) userService.loadUserByUsername(Security.getCurrentUsername());
             communityService.deleteComment(commentId, user);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
@@ -230,9 +230,9 @@ public class CommunityController {
     /* 첨부파일 삭제 */
     @DeleteMapping(value = "/api/community/{id}/file/{filename}")
     @ResponseStatus(code = HttpStatus.ACCEPTED)
-    public void deleteFile(@PathVariable("id") Long id, @PathVariable("filename") String filename) throws Exception {
+    public void deleteFile(@PathVariable("id") Long id, @PathVariable("filename") String filename,
+                           @AuthenticationPrincipal User user) {
         try {
-            User user = (User) userService.loadUserByUsername(Security.getCurrentUsername());
             Community post = communityService.getData(id).orElseThrow();
 
             if (user.getId().equals(post.getUser().getId())) {
