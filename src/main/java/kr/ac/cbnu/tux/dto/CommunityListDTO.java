@@ -20,6 +20,7 @@ public class CommunityListDTO {
     private OffsetDateTime createdDate;
     private OffsetDateTime editedDate;
     private Long view;
+    private Integer comment;
     private String author;
 
     public static CommunityListDTO build(Community post) {
@@ -30,6 +31,7 @@ public class CommunityListDTO {
                 .createdDate(post.getCreatedDate())
                 .editedDate(post.getEditedDate())
                 .view(post.getView())
+                .comment(post.getComments().size())
                 .author(post.getUser().getNickname())
                 .build();
     }

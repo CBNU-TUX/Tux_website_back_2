@@ -20,6 +20,7 @@ public class ReferenceRoomListDTO {
     private OffsetDateTime createdDate;
     private OffsetDateTime editedDate;
     private Long view;
+    private Integer comment;
     private String author;
 
     private String lecture;
@@ -34,6 +35,7 @@ public class ReferenceRoomListDTO {
                 .createdDate(data.getCreatedDate())
                 .editedDate(data.getEditedDate())
                 .view(data.getView())
+                .comment(data.getComments().size())
                 .author((data.getIsAnonymized()) ? "익명" : data.getUser().getNickname())
                 .lecture(data.getLecture())
                 .semester(data.getSemester())
