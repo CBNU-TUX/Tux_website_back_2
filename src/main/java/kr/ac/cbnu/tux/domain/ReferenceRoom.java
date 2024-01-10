@@ -72,6 +72,7 @@ public class ReferenceRoom {
     }
 
     @OneToMany(mappedBy = "data", fetch = FetchType.EAGER)
+    @Builder.Default
     private List<RfComment> comments = new ArrayList<>();
 
     public void addComment(RfComment comment) {
@@ -83,6 +84,7 @@ public class ReferenceRoom {
     }
 
     @OneToMany(mappedBy = "data", fetch = FetchType.EAGER)
+    @Builder.Default
     private List<Attachment> attachments = new ArrayList<>();
 
     public void addAttachment(Attachment file) {

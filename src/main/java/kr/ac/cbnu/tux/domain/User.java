@@ -102,6 +102,7 @@ public class User implements UserDetails {
 
     /* 커뮤니티 글 */
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @Builder.Default
     private List<Community> posts = new ArrayList<>();
 
     public void addPost(Community post) {
@@ -114,6 +115,7 @@ public class User implements UserDetails {
 
     /* 커뮤니티 댓글 */
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @Builder.Default
     private List<CmComment> cmComments = new ArrayList<>();
 
     public void addCmComment(CmComment comment) {
@@ -126,6 +128,7 @@ public class User implements UserDetails {
 
     /* 자료실 글 */
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @Builder.Default
     private List<ReferenceRoom> datas = new ArrayList<>();
 
     public void addData(ReferenceRoom data) {
@@ -138,6 +141,7 @@ public class User implements UserDetails {
 
     /* 자료실 댓글 */
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @Builder.Default
     private List<RfComment> rfComments = new ArrayList<>();
 
     public void addRfComment(RfComment comment) {

@@ -63,6 +63,7 @@ public class Community {
     }
 
     @OneToMany(mappedBy = "post", fetch = FetchType.EAGER)
+    @Builder.Default
     private List<CmComment> comments = new ArrayList<>();
 
     public void addComment(CmComment comment) {
@@ -74,6 +75,7 @@ public class Community {
     }
 
     @OneToMany(mappedBy = "post", fetch = FetchType.EAGER)
+    @Builder.Default
     private List<Attachment> attachments = new ArrayList<>();
 
     public void addAttachment(Attachment file) {
