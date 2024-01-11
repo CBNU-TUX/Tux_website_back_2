@@ -92,7 +92,7 @@ public class UserController {
                 throw new Exception("User not matched");
             }
 
-            userService.delete(id);
+            userService.userDelete(id);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }

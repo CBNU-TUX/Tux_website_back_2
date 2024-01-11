@@ -73,10 +73,14 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public void delete(Long id) throws Exception {
+    public void userDelete(Long id) throws Exception {
         Optional<User> opUser = userRepository.findById(id);
         if (opUser.isPresent()) {
             User user = opUser.get();
+            user.setPassword("-");
+            user.setEmail("-@-");
+            user.setDepartment("-");
+            user.setPhoneNumber("-");
             user.setDeleted(true);
             user.setDeletedDate(OffsetDateTime.now());
         } else {
@@ -147,10 +151,10 @@ public class UserService implements UserDetailsService {
     }
 
     public List<User> listAllWaitingUser() {
-        return userRepository.findUserByRole(UserRole.GUEST);
+        return userRepository.findByIsDeletedFalseAndRole(UserRole.GUEST);
     }
 
     public List<User> listAllUserNotGuest() {
-        return userRepository.findUserByRoleNot(UserRole.GUEST);
+        return userRepository.findByIsDeletedFalseAndRoleNot(UserRole.GUEST);
     }
 }
