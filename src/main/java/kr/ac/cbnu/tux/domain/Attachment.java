@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 
 /* 첨부파일 */
 @Entity
@@ -31,6 +32,10 @@ public class Attachment {
 
     @Column(name = "orders")
     private Integer order;     // 순서 : 갤러리 글의 사진 순서
+
+    @Column(nullable = false)
+    @ColumnDefault("0")
+    private Long downloadCount;
 
 
     // 커뮤니티와 맵핑시

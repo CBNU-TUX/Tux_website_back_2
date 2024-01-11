@@ -32,6 +32,7 @@ public class AttachmentService {
         file.setIsImage(multipartFile.getContentType().startsWith("image"));
         file.setOrder(data.getAttachments().size() + 1);
         file.setData(data);
+        file.setDownloadCount(0L);
         return attachmentRepository.save(file);
     }
 
@@ -44,7 +45,12 @@ public class AttachmentService {
         file.setIsImage(multipartFile.getContentType().startsWith("image"));
         file.setOrder(post.getAttachments().size() + 1);
         file.setPost(post);
+        file.setDownloadCount(0L);
         return attachmentRepository.save(file);
+    }
+
+    public void increaseDownloadCountById(Long attachmentId) {
+        attachmentRepository.increaseDownloadCountById(attachmentId);
     }
 
     public Optional<Attachment> getFile(String filename, Community post) {

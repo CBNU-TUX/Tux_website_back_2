@@ -210,7 +210,13 @@ public class CommunityController {
     /* 첨부파일 다운로드 */
     @GetMapping(value = "/api/community/{id}/file/{filename}")
     public ResponseEntity<FileSystemResource> getFile(
-            @PathVariable("id") String id, @PathVariable("filename") String filename) throws Exception {
+            @PathVariable("id") String id, @PathVariable("filename") String filename,
+            @RequestParam(name = "aid", defaultValue = "-1") Long aid) throws Exception {
+
+        // 다운로드 수 늘리기
+        if (aid != -1)
+            attachmentService.increaseDownloadCountById(aid);
+
         String path = System.getProperty("user.dir") +
                 String.format("/src/main/resources/static/file/community/%s/%s", id, URLDecoder.decode(filename, StandardCharsets.UTF_8));
 
