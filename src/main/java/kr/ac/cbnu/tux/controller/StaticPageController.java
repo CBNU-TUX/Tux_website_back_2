@@ -22,23 +22,13 @@ public class StaticPageController {
         this.staticPageService = staticPageService;
     }
 
-    /* 생성 */
-    @PostMapping("/api/admin/staticpage")
-    @ResponseStatus(code = HttpStatus.CREATED)
-    public void create(@RequestBody StaticPage page) {
-        try {
-            staticPageService.create(page);
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
-    }
-
-    /* 수정 */
-    @PutMapping("/api/admin/staticpage/{name}")
+    /* 생성 및 수정 */
+    @PostMapping("/api/admin/staticpage/{name}")
     @ResponseStatus(code = HttpStatus.ACCEPTED)
-    public void update(@PathVariable("name") String name, @RequestBody StaticPage updated) {
+    public void createAndUpdate(@PathVariable("name") String name, @RequestBody StaticPage updated) {
         try {
-            staticPageService.update(name, updated);
+            System.out.println("StaticPageController.createAndUpdate");
+            staticPageService.createAndUpdate(name, updated);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }

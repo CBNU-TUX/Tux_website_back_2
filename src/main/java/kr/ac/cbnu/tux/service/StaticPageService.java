@@ -6,6 +6,8 @@ import kr.ac.cbnu.tux.repository.StaticPageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class StaticPageService {
 
@@ -16,14 +18,17 @@ public class StaticPageService {
         this.staticPageRepository = staticPageRepository;
     }
 
-    public void create(StaticPage page) {
-        staticPageRepository.save(page);
-    }
-
     @Transactional
-    public void update(String name, StaticPage updated) {
-        StaticPage page = staticPageRepository.findByName(name).orElseThrow();
-        page.setBody(updated.getBody());
+    public void createAndUpdate(String name, StaticPage updated) {
+        Optional<StaticPage> opage = staticPageRepository.findByName(name);
+
+        if (opage.isPresent()) {
+            StaticPage page = opage.get();
+            page.setBody(updated.getBody());
+        }
+        else {
+            staticPageRepository.save(updated);
+        }
     }
 
     public StaticPage read(String name) {
