@@ -17,7 +17,8 @@ public class Sanitizer {
             .allowElements(
                     "table", "tr", "td", "th",
                     "colgroup", "caption", "col",
-                    "thead", "tbody", "tfoot")
+                    "thead", "tbody", "tfoot",
+                    "pre")
             .allowAttributes("summary").onElements("table")
             .allowAttributes("align", "valign")
             .onElements("table", "tr", "td", "th",
@@ -32,7 +33,7 @@ public class Sanitizer {
 
             .allowAttributes("alt", "align", "title", "img").onElements("img")
             .allowAttributes("href", "target", "class").onElements("a")
-            .allowAttributes("class", "id", "style").onElements("div", "li", "p", "span")
+            .allowAttributes("class", "id", "style", "spellcheck").onElements("div", "li", "p", "span", "pre")
             .allowAttributes("id").onElements("ul")
             .allowAttributes("rel", "href", "media").onElements("link")
             .toFactory();
