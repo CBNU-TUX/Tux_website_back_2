@@ -4,6 +4,7 @@ import kr.ac.cbnu.tux.domain.*;
 import kr.ac.cbnu.tux.dto.ReferenceRoomDTO;
 import kr.ac.cbnu.tux.dto.ReferenceRoomListDTO;
 import kr.ac.cbnu.tux.enums.ReferenceRoomPostType;
+import kr.ac.cbnu.tux.enums.UserRole;
 import kr.ac.cbnu.tux.service.AttachmentService;
 import kr.ac.cbnu.tux.service.ReferenceRoomService;
 import kr.ac.cbnu.tux.service.UserService;
@@ -81,7 +82,7 @@ public class ReferenceRoomController {
         try {
             ReferenceRoom data = referenceRoomService.getData(id).orElseThrow();
 
-            if (user.getId().equals(data.getUser().getId())) {
+            if (user.getId().equals(data.getUser().getId()) || user.getRole() == UserRole.ADMIN) {
                 Attachment file = attachmentService.create(multipartFile, data);
                 referenceRoomService.addAttachment(file, data);
                 FileHandler.saveAttactment("referenceroom", data.getId().toString(), multipartFile);
@@ -243,7 +244,7 @@ public class ReferenceRoomController {
         try {
             ReferenceRoom data = referenceRoomService.getData(id).orElseThrow();
 
-            if (user.getId().equals(data.getUser().getId())) {
+            if (user.getId().equals(data.getUser().getId()) || user.getRole() == UserRole.ADMIN) {
                 Attachment file = attachmentService.getFile(URLDecoder.decode(filename, StandardCharsets.UTF_8), data).orElseThrow();
                 attachmentService.delete(file, data);
             } else {

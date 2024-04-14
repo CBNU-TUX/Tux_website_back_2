@@ -86,7 +86,7 @@ public class CommunityService {
     public void update(Long id, CommunityPostType updatedCategory, Community updated, User user) throws Exception {
         Community post = communityRepository.findById(id).orElseThrow();
 
-        if (post.getUser().getId().equals(user.getId())) {
+        if (post.getUser().getId().equals(user.getId()) || user.getRole() == UserRole.ADMIN) {
             post.setCategory(updatedCategory);
             post.setTitle(updated.getTitle());
             post.setBody(sanitizer.sanitize(updated.getBody()));

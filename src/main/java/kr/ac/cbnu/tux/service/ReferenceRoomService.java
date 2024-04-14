@@ -90,7 +90,7 @@ public class ReferenceRoomService {
     public void update(Long id, ReferenceRoomPostType updatedCategory, ReferenceRoom updated, User user) throws Exception {
         ReferenceRoom data = referenceRoomRepository.findById(id).orElseThrow();
 
-        if (data.getUser().getId().equals(user.getId())) {
+        if (data.getUser().getId().equals(user.getId()) || user.getRole() == UserRole.ADMIN) {
             data.setCategory(updatedCategory);
             data.setTitle(updated.getTitle());
             data.setBody(sanitizer.sanitize(updated.getBody()));

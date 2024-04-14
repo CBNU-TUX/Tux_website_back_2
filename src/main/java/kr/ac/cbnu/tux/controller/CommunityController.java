@@ -6,6 +6,7 @@ import kr.ac.cbnu.tux.domain.*;
 import kr.ac.cbnu.tux.dto.CommunityDTO;
 import kr.ac.cbnu.tux.dto.CommunityListDTO;
 import kr.ac.cbnu.tux.enums.CommunityPostType;
+import kr.ac.cbnu.tux.enums.UserRole;
 import kr.ac.cbnu.tux.service.AttachmentService;
 import kr.ac.cbnu.tux.service.CommunityService;
 import kr.ac.cbnu.tux.utility.FileHandler;
@@ -81,7 +82,7 @@ public class CommunityController {
         try {
             Community post = communityService.getData(id).orElseThrow();
 
-            if (user.getId().equals(post.getUser().getId())) {
+            if (user.getId().equals(post.getUser().getId()) || user.getRole() == UserRole.ADMIN) {
                 Attachment file = attachmentService.create(multipartFile, post);
                 communityService.addAttachment(file, post);
                 FileHandler.saveAttactment("community", post.getId().toString(), multipartFile);
@@ -241,7 +242,7 @@ public class CommunityController {
         try {
             Community post = communityService.getData(id).orElseThrow();
 
-            if (user.getId().equals(post.getUser().getId())) {
+            if (user.getId().equals(post.getUser().getId()) || user.getRole() == UserRole.ADMIN) {
                 Attachment file = attachmentService.getFile(URLDecoder.decode(filename, StandardCharsets.UTF_8), post).orElseThrow();
                 attachmentService.delete(file, post);
             } else {
