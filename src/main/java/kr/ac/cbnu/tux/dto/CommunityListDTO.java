@@ -31,7 +31,7 @@ public class CommunityListDTO {
                 .createdDate(post.getCreatedDate())
                 .editedDate(post.getEditedDate())
                 .view(post.getView())
-                .comment(post.getComments().size())
+                .comment(post.getComments().stream().filter(p -> !p.getIsDeleted()).toList().size())
                 .author(post.getUser().getNickname())
                 .build();
     }

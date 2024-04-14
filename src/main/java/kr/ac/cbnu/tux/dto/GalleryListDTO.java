@@ -44,7 +44,7 @@ public class GalleryListDTO {
                 .createdDate(data.getCreatedDate())
                 .editedDate(data.getEditedDate())
                 .view(data.getView())
-                .comment(data.getComments().size())
+                .comment(data.getComments().stream().filter(c -> !c.getIsDeleted()).toList().size())
                 .author((data.getIsAnonymized()) ? "익명" : data.getUser().getNickname())
                 .lecture(data.getLecture())
                 .semester(data.getSemester())
