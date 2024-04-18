@@ -31,6 +31,17 @@ public class Like {
         }
     }
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    private ReferenceRoom data;
+
+    public void setData(ReferenceRoom data) {
+        this.data = data;
+
+        if (data != null && !data.getLikes().contains(this)) {
+            data.getLikes().add(this);
+        }
+    }
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;

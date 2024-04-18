@@ -45,7 +45,7 @@ public class CommunityDTO {
                 .toList();
 
         List<String> likedPeople = post.getLikes().stream()
-                .filter(l -> !l.getDislike())
+                .filter(l -> !l.getDislike() && !l.getUser().isDeleted())
                 .map(l -> l.getUser().getNickname())
                 .toList();
 

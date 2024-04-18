@@ -54,18 +54,6 @@ public class Community {
     @NotNull
     private User user;
 
-    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
-    private List<Like> likes = new ArrayList<>();
-
-    public void addlikes(Like like) {
-        this.likes.add(like);
-
-        if (like.getPost() != this) {
-            like.setPost(this);
-        }
-    }
-
-
     public void setUser(User user) {
         this.user = user;
 
@@ -73,6 +61,7 @@ public class Community {
             user.getPosts().add(this);
         }
     }
+
 
     @OneToMany(mappedBy = "post", fetch = FetchType.EAGER)
     @Builder.Default
@@ -103,6 +92,18 @@ public class Community {
 
         if (file.getData() != null) {
             file.setData(null);
+        }
+    }
+
+
+    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
+    private List<Like> likes = new ArrayList<>();
+
+    public void addlikes(Like like) {
+        this.likes.add(like);
+
+        if (like.getPost() != this) {
+            like.setPost(this);
         }
     }
 

@@ -6,6 +6,7 @@ import kr.ac.cbnu.tux.dto.ReferenceRoomListDTO;
 import kr.ac.cbnu.tux.enums.ReferenceRoomPostType;
 import kr.ac.cbnu.tux.enums.UserRole;
 import kr.ac.cbnu.tux.service.AttachmentService;
+import kr.ac.cbnu.tux.service.LikeService;
 import kr.ac.cbnu.tux.service.ReferenceRoomService;
 import kr.ac.cbnu.tux.service.UserService;
 import kr.ac.cbnu.tux.utility.FileHandler;
@@ -35,14 +36,15 @@ import java.nio.file.Path;
 public class ReferenceRoomController {
 
     private final ReferenceRoomService referenceRoomService;
-    private final UserService userService;
     private final AttachmentService attachmentService;
+    private final LikeService likeService;
 
     @Autowired
-    public ReferenceRoomController(ReferenceRoomService referenceRoomService, UserService userService, AttachmentService attachmentService) {
+    public ReferenceRoomController(ReferenceRoomService referenceRoomService, AttachmentService attachmentService,
+                                   LikeService likeService) {
         this.referenceRoomService = referenceRoomService;
-        this.userService = userService;
         this.attachmentService = attachmentService;
+        this.likeService = likeService;
     }
 
 
@@ -254,7 +256,26 @@ public class ReferenceRoomController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
-    
+
+
+    /* 추천 비추천 추가 */
+    @PostMapping("/api/referenceroom/{id}/likes")
+    @ResponseStatus(code = HttpStatus.ACCEPTED)
+    public void addLike(@PathVariable("id") Long id, @RequestParam Boolean dislike,
+                        @AuthenticationPrincipal User user) {
+        try {
+            if (user == null)
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+
+            ReferenceRoom data = referenceRoomService.getData(id).orElseThrow();
+            likeService.create(data, user, dislike);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
+
+
     private ReferenceRoomPostType convertType(String type) {
         if (type.equals("study"))  return ReferenceRoomPostType.STUDY;
         if (type.equals("exam")) return ReferenceRoomPostType.EXAM;

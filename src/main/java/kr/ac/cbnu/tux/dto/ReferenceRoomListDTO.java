@@ -22,6 +22,7 @@ public class ReferenceRoomListDTO {
     private Long view;
     private Integer comment;
     private String author;
+    private Long likes;
 
     private String lecture;
     private String semester;
@@ -37,6 +38,7 @@ public class ReferenceRoomListDTO {
                 .view(data.getView())
                 .comment(data.getComments().stream().filter(c -> !c.getIsDeleted()).toList().size())
                 .author((data.getIsAnonymized()) ? "익명" : data.getUser().getNickname())
+                .likes(data.getLikes().stream().filter(l -> !l.getDislike()).count())
                 .lecture(data.getLecture())
                 .semester(data.getSemester())
                 .professor(data.getProfessor())

@@ -71,6 +71,7 @@ public class ReferenceRoom {
         }
     }
 
+
     @OneToMany(mappedBy = "data", fetch = FetchType.EAGER)
     @Builder.Default
     private List<RfComment> comments = new ArrayList<>();
@@ -100,6 +101,18 @@ public class ReferenceRoom {
 
         if (file.getData() != null) {
             file.setData(null);
+        }
+    }
+
+
+    @OneToMany(mappedBy = "data", fetch = FetchType.LAZY)
+    private List<Like> likes = new ArrayList<>();
+
+    public void addlikes(Like like) {
+        this.likes.add(like);
+
+        if (like.getData() != this) {
+            like.setData(this);
         }
     }
 
