@@ -1,6 +1,8 @@
 package kr.ac.cbnu.tux.dto;
 
 import kr.ac.cbnu.tux.domain.Community;
+import kr.ac.cbnu.tux.domain.Like;
+import kr.ac.cbnu.tux.domain.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,6 +28,9 @@ public class CommunityDTO {
     private String author;
     List<AttachmentDTO> files;
     private List<CmCommentDTO> comments;
+    private Integer likes;
+    List<String> likedPeople;
+    private Integer dislikes;
 
     public static CommunityDTO build(Community post) {
         List<AttachmentDTO> files = post.getAttachments().stream()
@@ -39,6 +44,15 @@ public class CommunityDTO {
                 .map(c -> CmCommentDTO.build(c))
                 .toList();
 
+        List<String> likedPeople = post.getLikes().stream()
+                .filter(l -> !l.getDislike())
+                .map(l -> l.getUser().getNickname())
+                .toList();
+
+        Long dislikes = post.getLikes().stream()
+                .filter(l -> l.getDislike())
+                .count();
+
         return CommunityDTO.builder()
                 .id(post.getId())
                 .category(post.getCategory().name())
@@ -51,6 +65,9 @@ public class CommunityDTO {
                 .author(post.getUser().getNickname())
                 .files(files)
                 .comments(comments)
+                .likes(likedPeople.size())
+                .likedPeople(likedPeople)
+                .dislikes(dislikes.intValue())
                 .build();
     }
 

@@ -9,6 +9,7 @@ import kr.ac.cbnu.tux.enums.CommunityPostType;
 import kr.ac.cbnu.tux.enums.UserRole;
 import kr.ac.cbnu.tux.service.AttachmentService;
 import kr.ac.cbnu.tux.service.CommunityService;
+import kr.ac.cbnu.tux.service.LikeService;
 import kr.ac.cbnu.tux.utility.FileHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
@@ -38,11 +39,14 @@ public class CommunityController {
 
     private final CommunityService communityService;
     private final AttachmentService attachmentService;
+    private final LikeService likeService;
 
     @Autowired
-    public CommunityController(CommunityService communityService, AttachmentService attachmentService) {
+    public CommunityController(CommunityService communityService, AttachmentService attachmentService,
+                               LikeService likeService) {
         this.communityService = communityService;
         this.attachmentService = attachmentService;
+        this.likeService = likeService;
     }
 
     /* 파일 업로드 및 글쓰기 */
@@ -252,6 +256,23 @@ public class CommunityController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
+
+    /* 추천 비추천 추가 */
+    @PostMapping("/api/community/{id}/likes")
+    @ResponseStatus(code = HttpStatus.ACCEPTED)
+    public void addLike(@PathVariable("id") Long id, @RequestParam Boolean dislike,
+                           @AuthenticationPrincipal User user) {
+        try {
+            if (user == null)
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+
+            Community post = communityService.getData(id).orElseThrow();
+            likeService.create(post, user, dislike);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
 
     private CommunityPostType convertType(String type) {
         if (type.equals("notice"))  return CommunityPostType.NOTICE;

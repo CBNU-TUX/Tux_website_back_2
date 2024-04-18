@@ -22,6 +22,7 @@ public class CommunityListDTO {
     private Long view;
     private Integer comment;
     private String author;
+    private Long likes;
 
     public static CommunityListDTO build(Community post) {
         return CommunityListDTO.builder()
@@ -33,6 +34,7 @@ public class CommunityListDTO {
                 .view(post.getView())
                 .comment(post.getComments().stream().filter(p -> !p.getIsDeleted()).toList().size())
                 .author(post.getUser().getNickname())
+                .likes(post.getLikes().stream().filter(l -> !l.getDislike()).count())
                 .build();
     }
 }
