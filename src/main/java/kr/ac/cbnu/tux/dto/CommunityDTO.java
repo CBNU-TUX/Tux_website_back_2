@@ -28,9 +28,9 @@ public class CommunityDTO {
     private String author;
     List<AttachmentDTO> files;
     private List<CmCommentDTO> comments;
-    private Integer likes;
+    private Long likes;
     List<String> likedPeople;
-    private Integer dislikes;
+    private Long dislikes;
 
     public static CommunityDTO build(Community post) {
         List<AttachmentDTO> files = post.getAttachments().stream()
@@ -43,6 +43,10 @@ public class CommunityDTO {
                 .sorted((c1, c2) -> c1.getCreatedDate().compareTo(c2.getCreatedDate()))
                 .map(c -> CmCommentDTO.build(c))
                 .toList();
+
+        Long likes = post.getLikes().stream()
+                .filter(l -> !l.getDislike())
+                .count();
 
         List<String> likedPeople = post.getLikes().stream()
                 .filter(l -> !l.getDislike() && !l.getUser().isDeleted())
@@ -65,9 +69,9 @@ public class CommunityDTO {
                 .author(post.getUser().getNickname())
                 .files(files)
                 .comments(comments)
-                .likes(likedPeople.size())
+                .likes(likes)
                 .likedPeople(likedPeople)
-                .dislikes(dislikes.intValue())
+                .dislikes(dislikes)
                 .build();
     }
 

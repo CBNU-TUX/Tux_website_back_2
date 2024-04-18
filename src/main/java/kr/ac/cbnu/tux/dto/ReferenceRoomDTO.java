@@ -26,9 +26,9 @@ public class ReferenceRoomDTO {
     private String author;
     List<AttachmentDTO> files;
     List<RfCommentDTO> comments;
-    private Integer likes;
+    private Long likes;
     List<String> likedPeople;
-    private Integer dislikes;
+    private Long dislikes;
 
     private Boolean isAnonymized;
     private String lecture;
@@ -46,6 +46,10 @@ public class ReferenceRoomDTO {
                 .sorted((c1, c2) -> c1.getCreatedDate().compareTo(c2.getCreatedDate()))
                 .map(c -> RfCommentDTO.build(c))
                 .toList();
+
+        Long likes = data.getLikes().stream()
+                .filter(l -> !l.getDislike())
+                .count();
 
         List<String> likedPeople = data.getLikes().stream()
                 .filter(l -> !l.getDislike() && !l.getUser().isDeleted())
@@ -67,9 +71,9 @@ public class ReferenceRoomDTO {
                 .authorId(data.getUser().getId())
                 .author((data.getIsAnonymized()) ? "익명" : data.getUser().getNickname())
                 .isAnonymized(data.getIsAnonymized())
-                .likes(likedPeople.size())
+                .likes(likes)
                 .likedPeople(likedPeople)
-                .dislikes(dislikes.intValue())
+                .dislikes(dislikes)
                 .lecture(data.getLecture())
                 .semester(data.getSemester())
                 .professor(data.getProfessor())
