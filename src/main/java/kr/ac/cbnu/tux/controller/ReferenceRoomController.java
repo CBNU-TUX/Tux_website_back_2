@@ -134,9 +134,9 @@ public class ReferenceRoomController {
     /* 글 읽기 */
     @GetMapping("/api/referenceroom/{id}")
     @ResponseBody
-    public ReferenceRoomDTO read(@PathVariable("id") Long id) {
+    public ReferenceRoomDTO read(@PathVariable("id") Long id, @AuthenticationPrincipal User user) {
         try {
-            ReferenceRoom data = referenceRoomService.read(id).orElseThrow();
+            ReferenceRoom data = referenceRoomService.read(id, user);
             return ReferenceRoomDTO.build(data);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Not found");

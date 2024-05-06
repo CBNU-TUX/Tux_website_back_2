@@ -108,9 +108,13 @@ public class CommunityService {
         }
     }
 
-    public Optional<Community> read(Long id) {
-        communityRepository.updateViewById(id);
-        return communityRepository.findById(id);
+    public Community read(Long id, User user) throws Exception {
+        Community post = communityRepository.findById(id).orElseThrow();
+
+        if (user == null || user != post.getUser())
+            communityRepository.updateViewById(id);
+
+        return post;
     }
 
 

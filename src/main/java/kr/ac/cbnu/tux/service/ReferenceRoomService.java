@@ -118,9 +118,13 @@ public class ReferenceRoomService {
     }
 
     /* 글 조회 */
-    public Optional<ReferenceRoom> read(Long id) {
-        referenceRoomRepository.updateViewById(id);
-        return referenceRoomRepository.findById(id);
+    public ReferenceRoom read(Long id, User user) throws Exception {
+        ReferenceRoom data = referenceRoomRepository.findById(id).orElseThrow();
+
+        if (user == null || user != data.getUser())
+            referenceRoomRepository.updateViewById(id);
+
+        return data;
     }
 
 

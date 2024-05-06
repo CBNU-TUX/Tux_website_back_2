@@ -133,9 +133,9 @@ public class CommunityController {
 
     @GetMapping("/api/community/{id}")
     @ResponseBody
-    public CommunityDTO read(@PathVariable("id") Long id) {
+    public CommunityDTO read(@PathVariable("id") Long id, @AuthenticationPrincipal User user) {
         try {
-            Community post = communityService.read(id).orElseThrow();
+            Community post = communityService.read(id, user);
             return CommunityDTO.build(post);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Not found");
