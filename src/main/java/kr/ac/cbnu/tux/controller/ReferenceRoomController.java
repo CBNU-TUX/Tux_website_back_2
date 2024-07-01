@@ -142,7 +142,7 @@ public class ReferenceRoomController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Not found");
         }
     }
-    
+
     /* 자료실 리스트 조회 */
 
     @GetMapping("/api/referenceroom/list")
@@ -228,8 +228,15 @@ public class ReferenceRoomController {
         if (new File(path).exists()) {
             FileSystemResource resource = new FileSystemResource(path);
 
+            MediaType mediaType;
+            try {
+                mediaType = MediaType.parseMediaType(Files.probeContentType(Path.of(path)));
+            } catch (Exception e){
+                mediaType = MediaType.parseMediaType("application/octet-stream");
+            }
+
             return ResponseEntity.ok()
-                    .contentType(MediaType.parseMediaType(Files.probeContentType(Path.of(path))))
+                    .contentType(mediaType)
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" +
                             new String(filename.getBytes("UTF-8"), "ISO-8859-1") + "\"")
                     .body(resource);

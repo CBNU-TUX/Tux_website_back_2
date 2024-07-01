@@ -28,6 +28,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.File;
+import java.net.FileNameMap;
+import java.net.URLConnection;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -228,8 +230,15 @@ public class CommunityController {
         if (new File(path).exists()) {
             FileSystemResource resource = new FileSystemResource(path);
 
+            MediaType mediaType;
+            try {
+                mediaType = MediaType.parseMediaType(Files.probeContentType(Path.of(path)));
+            } catch (Exception e){
+                mediaType = MediaType.parseMediaType("application/octet-stream");
+            }
+
             return ResponseEntity.ok()
-                    .contentType(MediaType.parseMediaType(Files.probeContentType(Path.of(path))))
+                    .contentType(mediaType)
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" +
                             new String(filename.getBytes("UTF-8"), "ISO-8859-1") + "\"")
                     .body(resource);
