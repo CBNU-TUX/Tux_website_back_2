@@ -225,7 +225,7 @@ public class CommunityController {
             attachmentService.increaseDownloadCountById(aid);
 
         String path = System.getProperty("user.dir") +
-                String.format("/src/main/resources/static/file/community/%s/%s", id, URLDecoder.decode(filename, StandardCharsets.UTF_8));
+                String.format("/upload/file/community/%s/%s", id, URLDecoder.decode(filename, StandardCharsets.UTF_8));
 
         if (new File(path).exists()) {
             FileSystemResource resource = new FileSystemResource(path);

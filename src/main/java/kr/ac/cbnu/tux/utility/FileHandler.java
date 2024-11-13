@@ -13,7 +13,7 @@ public class FileHandler {
 
     public static void saveAttactment(String prefix, String id, MultipartFile file) throws java.io.IOException, IllegalStateException {
         String directoryPath = System.getProperty("user.dir") +
-                "/src/main/resources/static/file/" + prefix + "/" + id;
+                "/upload/file/" + prefix + "/" + id;
         if (!new File(directoryPath).exists()) {
             new File(directoryPath).mkdirs();
         }
@@ -27,7 +27,7 @@ public class FileHandler {
 
     public static void deleteAttactment(String prefix, String id, Attachment file) throws IOException {
         String directoryPath = System.getProperty("user.dir") +
-                "/src/main/resources/static/file/" + prefix + "/" + id;
+                "/upload/file/" + prefix + "/" + id;
         String filePath = directoryPath + "/" + file.getFilename().replaceAll("[\\\\/:*?\"<>| ]", "_");
 
         Files.deleteIfExists(Paths.get(filePath));

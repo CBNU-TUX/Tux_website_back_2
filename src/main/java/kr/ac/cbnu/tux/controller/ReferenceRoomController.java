@@ -223,7 +223,7 @@ public class ReferenceRoomController {
             attachmentService.increaseDownloadCountById(aid);
 
         String path = System.getProperty("user.dir") +
-                String.format("/src/main/resources/static/file/referenceroom/%s/%s", id, URLDecoder.decode(filename, StandardCharsets.UTF_8));
+                String.format("/upload/file/referenceroom/%s/%s", id, URLDecoder.decode(filename, StandardCharsets.UTF_8));
 
         if (new File(path).exists()) {
             FileSystemResource resource = new FileSystemResource(path);
