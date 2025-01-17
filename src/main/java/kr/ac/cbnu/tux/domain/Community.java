@@ -18,6 +18,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@NamedEntityGraph(name = "Community.fetchUser", attributeNodes = @NamedAttributeNode("user"))
 public class Community {
 
     @Id
